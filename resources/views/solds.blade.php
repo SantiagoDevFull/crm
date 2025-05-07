@@ -65,7 +65,7 @@
 
                                         <tbody>
                                             @php
-                                                $data = $forms[$tab_state->id] ?? []; // Asegurar que `$data` esté definido
+                                                $data = $forms[$tab_state->id] ?? [];
                                             @endphp
 
                                             @foreach ($data as $d)

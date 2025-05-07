@@ -58,6 +58,10 @@ class AgentsController extends Controller
         $modules = $this->modules();
         $id = 0;
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name',
+            )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
@@ -77,7 +81,14 @@ class AgentsController extends Controller
     public function indexWithId($id)
     {
         $modules = $this->modules();
-        $campaigns = Campain::get();
+        $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name',
+            )
+            ->where('user_groups.group_id', 14)
+            ->where('user_groups.user_id', Auth::user()->id)
+            ->get();
 
         $agents = Agent::leftjoin('users', 'users.id', '=', 'agents.user_id')
             ->leftjoin('campains', 'campains.id', '=', 'agents.camp_id')
@@ -93,7 +104,8 @@ class AgentsController extends Controller
             ->where('camp_id', $id)
             ->get();
         $agentsInSups = AgentInSup::get();
-        $users = User::get();
+        $userId = Auth::user()->id;
+        $users = User::where('user_id', $userId)->get();
         $sups = Sup::leftjoin('users', 'users.id', '=', 'sups.user_id')
             ->leftjoin('campains', 'campains.id', '=', 'sups.camp_id')
             ->select(
@@ -108,7 +120,6 @@ class AgentsController extends Controller
             ->where('camp_id', $id)
             ->get();
 
-        $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 

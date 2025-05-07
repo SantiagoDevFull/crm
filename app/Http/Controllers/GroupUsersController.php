@@ -50,7 +50,11 @@ class GroupUsersController extends Controller
         $campaigns = Campain::get();
 
         $user_id = Auth::user()->id;
-        $companies = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+        if($user_id == 44){
+            $companies = Company::where('id', 1)
+            ->get();
+            }else{
+                $companies = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
             ->select(
                 'companies.id as id',
                 'companies.name as name',
@@ -66,6 +70,9 @@ class GroupUsersController extends Controller
             )
             ->where('user_groups.user_id', $user_id)
             ->get();
+            }
+
+
         $userId = Auth::user()->id;
         if ($userId == 44) {
             $groups = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
@@ -120,7 +127,9 @@ class GroupUsersController extends Controller
         $subSectionsGroup = SubSectionInGroup::get();
         $user = User::findOrFail($userId);
 
-        return view('groups', compact('companies', 'groups', 'hours', 'campaigns', 'modules', 'allModules', 'modulesGroup', 'sectionsGroup', 'subSectionsGroup', 'user', 'company'));
+        
+    
+      return view('groups', compact('companies', 'groups', 'hours', 'campaigns', 'modules', 'allModules', 'modulesGroup', 'sectionsGroup', 'subSectionsGroup', 'user', 'company'));
     }
 
     public function modules()
@@ -182,9 +191,14 @@ class GroupUsersController extends Controller
 
     public function allModules()
     {
+
+        $user_name= Auth::user()->name;
+
         $modules = Module::get();
         $sections = Section::get();
-        $subSections = SubSection::get();
+        $subSections = SubSection::where('created_at_user',$user_name)->get();
+
+        echo $subSections;
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {
 

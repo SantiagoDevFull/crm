@@ -47,6 +47,10 @@ class StatesController extends Controller
         $modules = $this->modules();
         $id = 0;
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name'
+            )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
@@ -272,7 +276,11 @@ class StatesController extends Controller
         $element->save();
 
         if (isset($id)) {
-            StateState::where('to_state_id', $id)->delete();
+            if ($state_state) {
+                foreach ($state_state as $stateId) {
+                    StateState::where('from_state_id', $id)->where('to_state_id', $stateId)->delete();
+                }
+            }
         }
 
         $stateStateData = [];

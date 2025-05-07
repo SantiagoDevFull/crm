@@ -58,6 +58,10 @@ class SupsController extends Controller
         $modules = $this->modules();
         $id = 0;
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name',
+            )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
@@ -106,9 +110,9 @@ class SupsController extends Controller
             )
             ->where('camp_id', $id)
             ->get();
-        $users = User::get();
+            $userId = Auth::user()->id;
+            $users = User::where('user_id',$userId)->get();
 
-        $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 

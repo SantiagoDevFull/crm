@@ -356,7 +356,7 @@
                         .catch(error => {
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'Ocurrio un error al intentar eliminar el Estado.',
+                                text: error.error, 
                                 icon: 'error',
                                 confirmButtonColor: "#34c38f"
                             });

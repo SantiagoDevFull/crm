@@ -55,6 +55,7 @@ class CompanyController extends Controller
                 $query->where('user_groups.state_admin', '!=', '1')
                     ->orWhereNull('user_groups.state_admin');
             })
+            ->distinct()
             ->get();
 
 

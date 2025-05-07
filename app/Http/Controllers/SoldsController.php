@@ -148,6 +148,7 @@ class SoldsController extends Controller
 
         $cont = $groups->count();
 
+        
         return view('solds', compact(
             'id',
             'tab_state_id',
@@ -164,6 +165,8 @@ class SoldsController extends Controller
             'user_groups',
             'cont'
         ));
+        
+
     }
 
     public function export($id, $tab_state_id)
@@ -352,6 +355,7 @@ class SoldsController extends Controller
         $sections = Section::whereIn('id', $sectionsIds)
             ->orderBy('order', 'asc')
             ->get();
+
         $subSections = SubSection::whereIn('id', $subSectionsIds)
             ->get();
 
@@ -425,7 +429,7 @@ class SoldsController extends Controller
             $form->state = $state;
             $form->created_at_user = Auth::user()->name;
         }
-        
+
         $form->tab_state_id = $tab_state_id->tab_state_id;
         $form->state_id = $state_id;
         $form->data = $jsonData;

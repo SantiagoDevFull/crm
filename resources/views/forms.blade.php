@@ -35,7 +35,7 @@
                                 <select class="form-select" id="state_id" name="state_id">
                                     <option value="0" selected disabled>Seleccionar</option>
                                     @foreach ($states as $state)
-                                        <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                        <option value="{{ $state->id }}">{{ $state->id }} - {{ $state->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -21,15 +21,15 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'root']);
     Route::get('/enterprise', [App\Http\Controllers\HomeController::class, 'enterprise'])->name('dashboard.home.enterprise');
     Route::get('/sales', [App\Http\Controllers\HomeController::class, 'sales'])->name('dashboard.home.sales');
-    
+
     // esta ruta evita renderizar mas vistas
     // Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
     //Language Translation
-    
+
     Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
-    
+
     Route::post('/formsubmit', [App\Http\Controllers\HomeController::class, 'FormSubmit'])->name('FormSubmit');
-    
+
     Route::post('/profile/save-image-profile', [App\Http\Controllers\ProfileController::class, 'SaveImageProfile'])->name('SaveImageProfile');
     Route::post('/enterprise/save-company', [App\Http\Controllers\EnterpriseController::class, 'SaveCompany'])->name('SaveCompany');
     Route::post('/enterprise/save-hour', [App\Http\Controllers\HoursController::class, 'SaveHour'])->name('SaveHour');
@@ -37,14 +37,14 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::post('/enterprise/save-user', [App\Http\Controllers\UsersController::class, 'SaveUser'])->name('SaveUser');
     Route::post('/enterprise/add-group-user', [App\Http\Controllers\UsersController::class, 'AddGroup'])->name('AddGroup');
     Route::post('/enterprise/save-advertisement', [App\Http\Controllers\AdvertisementsController::class, 'SaveAdvertisement'])->name('SaveAdvertisement');
-    
+
     Route::patch('/enterprise/disallow-hour/{id}', [App\Http\Controllers\HoursController::class, 'DisallowHour'])->name('DisallowHour');
     Route::patch('/enterprise/allow-hour/{id}', [App\Http\Controllers\HoursController::class, 'AllowHour'])->name('AllowHour');
     Route::patch('/enterprise/disallow-group/{id}', [App\Http\Controllers\GroupUsersController::class, 'DisallowGroup'])->name('DisallowGroup');
     Route::patch('/enterprise/allow-group/{id}', [App\Http\Controllers\GroupUsersController::class, 'AllowGroup'])->name('AllowGroup');
     Route::patch('/enterprise/disallow-advertisement/{id}', [App\Http\Controllers\AdvertisementsController::class, 'DisallowAdvertisement'])->name('DisallowAdvertisement');
     Route::patch('/enterprise/allow-advertisement/{id}', [App\Http\Controllers\AdvertisementsController::class, 'AllowAdvertisement'])->name('AllowAdvertisement');
-    
+
     Route::delete('/enterprise/delete-hour/{id}', [App\Http\Controllers\HoursController::class, 'DeleteHour'])->name('DeleteHour');
     Route::delete('/enterprise/delete-group/{id}', [App\Http\Controllers\GroupUsersController::class, 'DeleteGroup'])->name('DeleteGroup');
     Route::delete('/enterprise/delete-user/{id}', [App\Http\Controllers\UsersController::class, 'DeleteUser'])->name('DeleteUser');
@@ -52,7 +52,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::delete('/enterprise/delete-admin/{id}', [App\Http\Controllers\EnterpriseController::class, 'DeleteAdmin'])->name('DeleteAdmin');
     Route::delete('/enterprise/delete-user-group/{id}', [App\Http\Controllers\UsersController::class, 'DeleteUserGroup'])->name('DeleteUserGroup');
     Route::delete('/enterprise/delete-advertisement/{id}', [App\Http\Controllers\AdvertisementsController::class, 'DeleteAdvertisement'])->name('DeleteAdvertisement');
-    
+
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index']);
     Route::get('/enterprise/companies', [App\Http\Controllers\CompanyController::class, 'index']);
     Route::get('/enterprise/config', [App\Http\Controllers\EnterpriseController::class, 'index'])->name('dashboard.company.index');
@@ -60,7 +60,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::get('/enterprise/groups', [App\Http\Controllers\GroupUsersController::class, 'index'])->name('dashboard.group.user.index');
     Route::get('/enterprise/users', [App\Http\Controllers\UsersController::class, 'index'])->name('dashboard.user.index');
     Route::get('/enterprise/advertisements', [App\Http\Controllers\AdvertisementsController::class, 'index'])->name('dashboard.advertisement.index');
-    
+
     Route::post('/sales/save-campaign', [App\Http\Controllers\CampaignsController::class, 'SaveCampaign'])->name('SaveCampaign');
     Route::post('/sales/save-tab-state', [App\Http\Controllers\TabStatesController::class, 'SaveTabState'])->name('SaveTabState');
     Route::post('/sales/save-state', [App\Http\Controllers\StatesController::class, 'SaveState'])->name('SaveState');
@@ -70,7 +70,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::post('/sales/save-sup', [App\Http\Controllers\SupsController::class, 'SaveSup'])->name('SaveSup');
     Route::post('/sales/save-agent', [App\Http\Controllers\AgentsController::class, 'SaveAgent'])->name('SaveAgent');
     Route::post('/sales/save-sold', [App\Http\Controllers\SoldsController::class, 'SaveSold'])->name('SaveSold');
-    
+
     Route::patch('/sales/disallow-campaign/{id}', [App\Http\Controllers\CampaignsController::class, 'DisallowCampaign'])->name('DisallowCampaign');
     Route::patch('/sales/allow-campaign/{id}', [App\Http\Controllers\CampaignsController::class, 'AllowCampaign'])->name('AllowCampaign');
     Route::patch('/sales/disallow-tab-state/{id}', [App\Http\Controllers\TabStatesController::class, 'DisallowTabState'])->name('DisallowTabState');
@@ -89,7 +89,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::patch('/sales/allow-agent/{id}', [App\Http\Controllers\AgentsController::class, 'AllowAgent'])->name('AllowAgent');
     Route::patch('/sales/disallow-sold/{id}', [App\Http\Controllers\SoldsController::class, 'DisallowSold'])->name('DisallowSold');
     Route::patch('/sales/allow-sold/{id}', [App\Http\Controllers\SoldsController::class, 'AllowSold'])->name('AllowSold');
-    
+
     Route::delete('/sales/delete-campaign/{id}', [App\Http\Controllers\CampaignsController::class, 'DeleteCampaign'])->name('DeleteCampaign');
     Route::delete('/sales/delete-tab-state/{id}', [App\Http\Controllers\TabStatesController::class, 'DeleteTabState'])->name('DeleteTabState');
     Route::delete('/sales/delete-state/{id}', [App\Http\Controllers\StatesController::class, 'DeleteState'])->name('DeleteState');
@@ -99,7 +99,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::delete('/sales/delete-sup/{id}', [App\Http\Controllers\SupsController::class, 'DeleteSup'])->name('DeleteSup');
     Route::delete('/sales/delete-agent/{id}', [App\Http\Controllers\AgentsController::class, 'DeleteAgent'])->name('DeleteAgent');
     Route::delete('/sales/delete-sold/{id}', [App\Http\Controllers\SoldsController::class, 'DeleteSold'])->name('DeleteSold');
-    
+
     Route::get('/sales/campaigns', [App\Http\Controllers\CampaignsController::class, 'index'])->name('dashboard.campain.index');
     Route::get('/sales/tab-states', [App\Http\Controllers\TabStatesController::class, 'index'])->name('dashboard.tab_state.index');
     Route::get('/sales/tab-states/{id}', [App\Http\Controllers\TabStatesController::class, 'indexWithId']);
@@ -118,7 +118,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::get('/sales/solds/{id}', [App\Http\Controllers\SoldsController::class, 'index'])->name('dashboard.sold.index');
     Route::get('/sales/solds/{id}/{tab_state_id}', [App\Http\Controllers\SoldsController::class, 'indexWithTabStateId']);
     Route::get('/sales/solds/{id}/{tab_state_id}/{form_id}', [App\Http\Controllers\SoldsController::class, 'indexWithFormId']);
-    
+
     Route::get('/sales/solds-export/{id}/{tab_state_id}', [App\Http\Controllers\SoldsController::class, 'export']);
 });
 // Route::middleware('auth')->group(function () {

@@ -11,11 +11,15 @@
 
 @section('content')
     @component('common-components.breadcrumb')
-        @slot('pagetitle') Administración de Usuarios @endslot
-        @slot('title') Grupos de Usuarios @endslot
+        @slot('pagetitle')
+            Administración de Usuarios
+        @endslot
+        @slot('title')
+            Grupos de Usuarios
+        @endslot
     @endcomponent
 
-    <x-table :idCreateButton="'newEditGroup'" :idModal="'editGroup'" :textButton="'Crear Grupo'" :headers="['GRUPO','IP','HORARIO','ESTADO','OPCIONES']">
+    <x-table :idCreateButton="'newEditGroup'" :idModal="'editGroup'" :textButton="'Crear Grupo'" :headers="['GRUPO', 'IP', 'HORARIO', 'ESTADO', 'OPCIONES']">
         @foreach ($groups as $group)
             <tr data-id="{{ $group->id }}">
                 <td data-field="grupo">
@@ -35,15 +39,18 @@
                 </td>
                 <td data-field="estado">
                     <div data-group-id="{{ $group->id }}">
-                        <input type="checkbox" class="switch" id="switch-{{ $group->id }}" switch="bool" data-group-id="{{ $group->id }}" {{ $group->state == "1" ? 'checked' : '' }} />
+                        <input type="checkbox" class="switch" id="switch-{{ $group->id }}" switch="bool"
+                            data-group-id="{{ $group->id }}" {{ $group->state == '1' ? 'checked' : '' }} />
                         <label for="switch-{{ $group->id }}" data-on-label="On" data-off-label="Off"></label>
                     </div>
                 </td>
                 <td style="width: 100px">
-                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit" data-group-id="{{ $group->id }}" data-bs-toggle="modal" data-bs-target="#editGroup">
+                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit"
+                        data-group-id="{{ $group->id }}" data-bs-toggle="modal" data-bs-target="#editGroup">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete" data-group-id="{{ $group->id }}">
+                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete"
+                        data-group-id="{{ $group->id }}">
                         <i class="fas uil-trash-alt"></i>
                     </button>
                 </td>
@@ -152,10 +159,9 @@
         </div>
 
     </x-modal>
-
 @endsection
 @section('script')
-<script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
@@ -168,7 +174,7 @@
         const sectionsGroup = @json($sectionsGroup);
         const subSectionsGroup = @json($subSectionsGroup);
         const titleEditGroup = $('#editGroupTitle')[0];
-		const forms = document.getElementsByClassName('needs-validation');
+        const forms = document.getElementsByClassName('needs-validation');
         console.log(groups)
 
         function reinitData() {
@@ -184,6 +190,7 @@
             $('#company_id')[0].value = "0";
             $('#horario_id')[0].value = "0";
         };
+
         function loadData(groupId) {
             $('#editGroup').removeClass('was-validated');
             $('#editGroup').addClass('needs-validated');
@@ -221,24 +228,30 @@
                 $('#horario_id')[0].value = horario_id;
             };
         };
+
         function getModules(groupId) {
             const dataFilter = modulesGroup.filter(i => i.group_id == +groupId);
 
             return dataFilter;
         };
+
         function getSections(groupId) {
             const dataFilter = sectionsGroup.filter(i => i.group_id == +groupId);
 
             return dataFilter;
         };
+
         function getSubSections(groupId) {
             const dataFilter = subSectionsGroup.filter(i => i.group_id == +groupId);
 
             return dataFilter;
         };
+
         function treePermissions(data) {
             const modulesData = data.map(i => {
-                const { sections } = i;
+                const {
+                    sections
+                } = i;
 
                 let opened = false;
 
@@ -252,7 +265,9 @@
                 }
 
                 const sectionsData = sections.map(e => {
-                    const { subSections } = e;
+                    const {
+                        subSections
+                    } = e;
 
                     let opened = false;
 
@@ -284,16 +299,17 @@
 
             return modulesData
         };
+
         function checkPermissions(modules, sections, subSections) {
             const tree = $(`#tree-container`).jstree(true);
 
-            modules.forEach(item =>{
+            modules.forEach(item => {
                 tree.check_node(`module_${item.module_id}`)
             });
-            sections.forEach(item =>{
+            sections.forEach(item => {
                 tree.check_node(`section_${item.section_id}`)
             });
-            subSections.forEach(item =>{
+            subSections.forEach(item => {
                 tree.check_node(`subSection_${item.sub_section_id}`)
             });
         };
@@ -308,21 +324,21 @@
                 plugins: ["checkbox"]
             });
 
-            $('#tree-container').on('changed.jstree', function (e, data) {
+            $('#tree-container').on('changed.jstree', function(e, data) {
                 let selectedNodes = data.selected;
                 $('#selected-nodes').val(JSON.stringify(selectedNodes));
             });
 
-            $('#newEditGroup').on('click', '', function () {
+            $('#newEditGroup').on('click', '', function() {
                 reinitData();
                 titleEditGroup.innerText = "Nuevo Grupo";
             });
 
-            $('#editGroup').on('click', 'btn-close', function () {
+            $('#editGroup').on('click', 'btn-close', function() {
                 reinitData();
             });
 
-            $('#datatable tbody').on('click', '.btn.edit', function () {
+            $('#datatable tbody').on('click', '.btn.edit', function() {
                 titleEditGroup.innerText = "Editar Grupo";
 
                 reinitData();
@@ -342,7 +358,7 @@
                 $('#editGroup').modal('show');
             });
 
-            $('#datatable tbody').on('dblclick', 'tr td div', function () {
+            $('#datatable tbody').on('dblclick', 'tr td div', function() {
                 reinitData();
 
                 const groupId = this.dataset.groupId;
@@ -352,7 +368,7 @@
                 $('#editGroup').modal('show');
             });
 
-            $('#datatable tbody').on('click', '.btn.delete', function () {
+            $('#datatable tbody').on('click', '.btn.delete', function() {
                 const groupId = this.dataset.groupId;
 
                 Swal.fire({
@@ -365,10 +381,58 @@
                     confirmButtonClass: 'btn btn-success mt-2',
                     cancelButtonClass: 'btn btn-danger ms-2 mt-2',
                     buttonsStyling: false
-                }).then(function (result) {
+                }).then(function(result) {
                     if (result.value) {
                         fetch(`{{ route('DeleteGroup', '') }}/${groupId}`, {
-                            method: 'DELETE',
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                const {
+                                    error
+                                } = data;
+
+                                if (error) {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error,
+                                        icon: 'error',
+                                        confirmButtonColor: "#34c38f"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Eliminado!',
+                                        text: 'Campaña eliminado.',
+                                        icon: 'success',
+                                        confirmButtonColor: "#34c38f"
+                                    }).then(function() {
+                                        window.location.reload();
+                                    })
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Ocurrio un error al intentar eliminar el grupo.',
+                                    icon: 'error',
+                                    confirmButtonColor: "#34c38f"
+                                });
+                            });
+                    };
+                });
+            });
+
+            $('#datatable input.switch').on('change', function(e) {
+                const val = this.checked;
+                const groupId = this.dataset.groupId;
+
+                if (val) {
+                    fetch(`{{ route('AllowGroup', '') }}/${groupId}`, {
+                            method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
@@ -376,72 +440,26 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            const { error } = data;
-
-                            if (error) {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: error,
-                                    icon: 'error',
-                                    confirmButtonColor: "#34c38f"
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Eliminado!',
-                                    text: 'Campaña eliminado.',
-                                    icon: 'success',
-                                    confirmButtonColor: "#34c38f"
-                                }).then(function () {
-                                    window.location.reload();
-                                })
-                            }
+                            console.log(data)
                         })
                         .catch(error => {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Ocurrio un error al intentar eliminar el grupo.',
-                                icon: 'error',
-                                confirmButtonColor: "#34c38f"
-                            });
+                            console.log(error)
                         });
-                    };
-                });
-            });
-
-            $('#datatable input.switch').on('change', function (e) {
-                const val = this.checked;
-                const groupId = this.dataset.groupId;
-
-                if (val) {
-                    fetch(`{{ route('AllowGroup', '') }}/${groupId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data)
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    });
                 } else {
                     fetch(`{{ route('DisallowGroup', '') }}/${groupId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data)
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    });
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        });
                 };
             });
             Array.prototype.filter.call(forms, function(form) {

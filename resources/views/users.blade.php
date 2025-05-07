@@ -10,11 +10,15 @@
 
 @section('content')
     @component('common-components.breadcrumb')
-        @slot('pagetitle') Administración de Usuarios @endslot
-        @slot('title') Usuarios @endslot
+        @slot('pagetitle')
+            Administración de Usuarios
+        @endslot
+        @slot('title')
+            Usuarios
+        @endslot
     @endcomponent
 
-    <x-table :idCreateButton="'newEditUser'" :idModal="'editUser'" :textButton="'Crear Usuario'" :headers="['NOMBRE','EMAIL','TELEFONO','GENERO','NACIMIENTO','OBSERVACIONES','OPCIONES']">
+    <x-table :idCreateButton="'newEditUser'" :idModal="'editUser'" :textButton="'Crear Usuario'" :headers="['NOMBRE', 'EMAIL', 'TELEFONO', 'GENERO', 'NACIMIENTO', 'OBSERVACIONES', 'OPCIONES']">
         @foreach ($users as $user)
             <tr data-id="{{ $user->id }}">
                 <td data-field="nombre">
@@ -48,13 +52,16 @@
                     </div>
                 </td>
                 <td style="width: 100px">
-                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit" data-user-id="{{ $user->id }}" data-bs-toggle="modal" data-bs-target="#editUser">
+                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit"
+                        data-user-id="{{ $user->id }}" data-bs-toggle="modal" data-bs-target="#editUser">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete" data-user-id="{{ $user->id }}">
+                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete"
+                        data-user-id="{{ $user->id }}">
                         <i class="fas uil-trash-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-success btn-sm add-group" title="Delete" data-user-id="{{ $user->id }}">
+                    <button type="button" class="btn btn-outline-success btn-sm add-group" title="Delete"
+                        data-user-id="{{ $user->id }}">
                         <i class="fas uil-users-alt"></i>
                     </button>
                 </td>
@@ -76,7 +83,8 @@
                 <div class="mb-3">
                     <label class="form-label" for="email">Email:</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Email"
+                            required>
                         <div class="input-group-text">{{ $company->sufijo }}</div>
                         <div class="valid-feedback">Valido!</div>
                         <div class="invalid-feedback">El email es requerido.</div>
@@ -90,7 +98,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" for="password">Contraseña:</label>
-                    <input type="password" class="form-control" id="password" name="password" >
+                    <input type="password" class="form-control" id="password" name="password">
                     <div class="valid-feedback">Valido!</div>
                     <div class="invalid-feedback">La contraseña es requerida.</div>
                 </div>
@@ -119,7 +127,8 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" for="fecha_naci">Fecha de nacimiento:</label>
-                    <input type="date" class="form-control" id="fecha_naci" name="fecha_naci" max="{{ now()->subYears(18)->format('Y-m-d') }}" required>
+                    <input type="date" class="form-control" id="fecha_naci" name="fecha_naci"
+                        max="{{ now()->subYears(18)->format('Y-m-d') }}" required>
                     <div class="valid-feedback">Valido!</div>
                     <div class="invalid-feedback">La fecha de nacimiento es requerida.</div>
                 </div>
@@ -135,7 +144,8 @@
         </div>
     </x-modal>
 
-    <div class="modal fade" id="addGroup" tabindex="-1" role="dialog" aria-labelledby="addGroup" aria-hidden="true">
+    <div class="modal fade" id="addGroup" tabindex="-1" role="dialog" aria-labelledby="addGroup"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -171,7 +181,8 @@
                             <div class="card">
                                 <div class="card-body">
 
-                                    <table id="datatable-group" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <table id="datatable-group" class="table table-bordered dt-responsive nowrap"
+                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>GRUPO</th>
@@ -185,7 +196,8 @@
                                                     GRUPO
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete" data-group-id="0">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm delete"
+                                                        title="Delete" data-group-id="0">
                                                         <i class="fas uil-trash-alt"></i>
                                                     </button>
                                                 </td>
@@ -204,10 +216,9 @@
             </div>
         </div>
     </div>
-
 @endsection
 @section('script')
-<script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
     <script>
@@ -216,7 +227,7 @@
         const users = @json($users);
         const groups = @json($groups);
         const titleEdit = $('#editUserTitle')[0];
-		const forms = document.getElementsByClassName('needs-validation');
+        const forms = document.getElementsByClassName('needs-validation');
 
         function reinitData() {
             $('#editUser').removeClass('was-validated');
@@ -233,6 +244,7 @@
             $('#user_id')[0].value = "";
             $('#datatable-group tbody')[0].innerHTML = "";
         };
+
         function loadData(ID) {
             $('#editUser').removeClass('was-validated');
             $('#editUser').addClass('needs-validated');
@@ -291,17 +303,17 @@
         $(document).ready(function() {
             const table = $('#datatable').DataTable();
 
-            $('#newEditUser').on('click', '', function () {
+            $('#newEditUser').on('click', '', function() {
                 $('#password').attr('required', true);
                 reinitData();
                 titleEdit.innerText = "Nuevo Usuario";
             });
 
-            $('#editUser').on('click', 'btn-close', function () {
+            $('#editUser').on('click', 'btn-close', function() {
                 reinitData();
             });
 
-            $('#datatable tbody').on('click', '.btn.edit', function () {
+            $('#datatable tbody').on('click', '.btn.edit', function() {
                 titleEdit.innerText = "Editar Usuario";
 
                 $('#password').attr('required', false);
@@ -315,7 +327,7 @@
                 $('#editUser').modal('show');
             });
 
-            $('#datatable tbody').on('click', '.btn.add-group', function () {
+            $('#datatable tbody').on('click', '.btn.add-group', function() {
                 titleEdit.innerText = "Editar Usuario";
 
                 reinitData();
@@ -327,7 +339,7 @@
                 $('#addGroup').modal('show');
             });
 
-            $('#datatable tbody').on('dblclick', 'tr td div', function () {
+            $('#datatable tbody').on('dblclick', 'tr td div', function() {
                 reinitData();
 
                 const userId = this.dataset.userId;
@@ -337,7 +349,7 @@
                 $('#editUser').modal('show');
             });
 
-            $('#datatable tbody').on('click', '.btn.delete', function () {
+            $('#datatable tbody').on('click', '.btn.delete', function() {
                 const userId = this.dataset.userId;
 
                 Swal.fire({
@@ -350,39 +362,39 @@
                     confirmButtonClass: 'btn btn-success mt-2',
                     cancelButtonClass: 'btn btn-danger ms-2 mt-2',
                     buttonsStyling: false
-                }).then(function (result) {
+                }).then(function(result) {
                     if (result.value) {
                         fetch(`{{ route('DeleteUser', '') }}/${userId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            Swal.fire({
-                                title: 'Eliminado!',
-                                text: 'Usuario eliminado.',
-                                icon: 'success',
-                                confirmButtonColor: "#34c38f"
-                            }).then(function () {
-                                window.location.reload();
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                }
                             })
-                        })
-                        .catch(error => {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Ocurrio un error al intentar eliminar el usuario.',
-                                icon: 'error',
-                                confirmButtonColor: "#34c38f"
+                            .then(response => response.json())
+                            .then(data => {
+                                Swal.fire({
+                                    title: 'Eliminado!',
+                                    text: 'Usuario eliminado.',
+                                    icon: 'success',
+                                    confirmButtonColor: "#34c38f"
+                                }).then(function() {
+                                    window.location.reload();
+                                })
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Ocurrio un error al intentar eliminar el usuario.',
+                                    icon: 'error',
+                                    confirmButtonColor: "#34c38f"
+                                });
                             });
-                        });
                     };
                 });
             });
 
-            $('#datatable-group tbody').on('click', '.btn.delete', function () {
+            $('#datatable-group tbody').on('click', '.btn.delete', function() {
                 const groupId = this.dataset.groupId;
 
                 Swal.fire({
@@ -395,34 +407,34 @@
                     confirmButtonClass: 'btn btn-success mt-2',
                     cancelButtonClass: 'btn btn-danger ms-2 mt-2',
                     buttonsStyling: false
-                }).then(function (result) {
+                }).then(function(result) {
                     if (result.value) {
                         fetch(`{{ route('DeleteUserGroup', '') }}/${groupId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            Swal.fire({
-                                title: 'Eliminado!',
-                                text: 'Grupo eliminado.',
-                                icon: 'success',
-                                confirmButtonColor: "#34c38f"
-                            }).then(function () {
-                                window.location.reload();
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                }
                             })
-                        })
-                        .catch(error => {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Ocurrio un error al intentar eliminar el grupo.',
-                                icon: 'error',
-                                confirmButtonColor: "#34c38f"
+                            .then(response => response.json())
+                            .then(data => {
+                                Swal.fire({
+                                    title: 'Eliminado!',
+                                    text: 'Grupo eliminado.',
+                                    icon: 'success',
+                                    confirmButtonColor: "#34c38f"
+                                }).then(function() {
+                                    window.location.reload();
+                                })
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Ocurrio un error al intentar eliminar el grupo.',
+                                    icon: 'error',
+                                    confirmButtonColor: "#34c38f"
+                                });
                             });
-                        });
                     };
                 });
             });
@@ -436,6 +448,5 @@
                 }, false);
             });
         });
-
     </script>
 @endsection

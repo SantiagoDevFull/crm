@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\User;
 use App\Models\Group;
+use App\Models\UserGroup;
+use Illuminate\Support\Str;
 
 class CheckUserIP
 {
@@ -17,12 +19,27 @@ class CheckUserIP
      */
     public function handle(Request $request, Closure $next): Response
     {
+
+        $user_id = $request->user()->id;
         $clientIP = $request->ip();
 
-        $userWithIP = Group::where('ip', 'like', '%' . $clientIP . '%')->exists();
+        $user_groups = UserGroup::where('user_id', $user_id)->get();
 
-        if (!$userWithIP) {
-            abort(403, 'Acceso denegado.');
+        $groups = Group::whereIn('id', $user_groups->pluck('group_id'))->get();
+
+        $hasEmptyIp = $groups->contains(function ($group) {
+            return empty($group->ip);
+        });
+
+        if (!$hasEmptyIp) {
+
+            $group = $groups->first(function ($group) use ($clientIP) {
+                return Str::contains($group->ip, $clientIP);
+            });
+
+            if (!$group) {
+                abort(403, 'Acceso denegado.');
+            }
         }
 
         return $next($request);

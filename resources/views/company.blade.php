@@ -225,7 +225,9 @@
                 <select class="form-select" name="user_group_id" id="user_group_id" required>
                     <option value="0" selected disabled>Seleccionar</option>
                     @foreach ($userGroups as $user_group)
-                        <option value="{{ $user_group->user_group_id }}">{{ $user_group->group_name }} -
+                        <option value="{{ $user_group->user_group_id }}">
+                            {{  $user_group->user_group_id }} - 
+                            {{ $user_group->group_name }} -
                             {{ $user_group->user_name }}</option>
                     @endforeach
                 </select>

@@ -171,7 +171,7 @@ class EnterpriseController extends Controller
 
         $user = User::where('id', $user_group->user_id)->first();
         $parte = explode('@', $user->email)[0];
-        $new_email = $parte . '@porasignar.com';
+        $new_email = $parte . '@xxxxxxxxx.com';
         $user->email = $new_email;
         $user->save();
 
@@ -251,12 +251,14 @@ class EnterpriseController extends Controller
         $company->created_at_user = Auth::user()->name;
         $company->save();
 
-        $obj = new File();
-        $obj->name = $originalFullName;
-        $obj->path = $path;
-        $obj->state = 1;
-        $obj->created_at_user = Auth::user()->name;
-        $obj->save();
+        if (!isset($id)) {
+            $obj = new File();
+            $obj->name = $originalFullName;
+            $obj->path = $path;
+            $obj->state = 1;
+            $obj->created_at_user = Auth::user()->name;
+            $obj->save();
+        }
 
         return redirect('/enterprise/companies');
     }

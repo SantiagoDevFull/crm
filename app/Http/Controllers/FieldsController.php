@@ -54,6 +54,10 @@ class FieldsController extends Controller
         $modules = $this->modules();
         $id = 0;
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name'
+            )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
@@ -83,7 +87,54 @@ class FieldsController extends Controller
         $blocks = Block::where('campain_id', $id)->get();
         $type_fields = TypeField::get();
         $widths = Width::get();
-        $groups = Group::get();
+        $userId = Auth::user()->id;
+        if ($userId == 44) {
+            $groups = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->select(
+                    'groups.id as id',
+                    'groups.company_id as company_id',
+                    'groups.campana_id as campana_id',
+                    'groups.name as name',
+                    'groups.ip as ip',
+                    'groups.horario_id as horario_id',
+                    'groups.state as state',
+                    'groups.perfil_id as perfil_id',
+                    'groups.created_at as created_at',
+                    'groups.updated_at as updated_at',
+                    'groups.created_at_user as created_at_user',
+                    'groups.updated_at_user as updated_at_user',
+                    'groups.deleted_at as deleted_at',
+                    'groups.permissions as permissions',
+                    'horarios.name as horario_name',
+                )
+                ->get();
+        } else {
+            $groups = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->select(
+                    'groups.id as id',
+                    'groups.company_id as company_id',
+                    'groups.campana_id as campana_id',
+                    'groups.name as name',
+                    'groups.ip as ip',
+                    'groups.horario_id as horario_id',
+                    'groups.state as state',
+                    'groups.perfil_id as perfil_id',
+                    'groups.created_at as created_at',
+                    'groups.updated_at as updated_at',
+                    'groups.created_at_user as created_at_user',
+                    'groups.updated_at_user as updated_at_user',
+                    'groups.deleted_at as deleted_at',
+                    'groups.permissions as permissions',
+                    'horarios.name as horario_name',
+                )
+                ->where('user_groups.user_id', $userId)
+                ->where('user_groups.group_id', 14)
+                ->get();
+        }
         $tab_states = TabState::where('campain_id', $id)->get();
         $states = State::get();
         $fields = Field::leftjoin('campains', 'campains.id', '=', 'fields.campain_id')

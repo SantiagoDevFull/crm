@@ -48,16 +48,22 @@ class UsersController extends Controller
         $campaigns = Campain::get();
 
         $userId = Auth::user()->id;
-        $groups_general = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+
+        $query_group = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
             ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
             ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
             ->select(
                 'groups.id as id',
                 'groups.name as name'
             )
-            ->where('user_groups.user_id', $userId)
-            ->where('user_groups.group_id', 14)
-            ->get();
+            ->where('user_groups.user_id', $userId);
+        //->where('groups.id', 14);
+
+        if ($userId != 44) {
+            $query_group->where('user_groups.user_id', $userId);
+        }
+
+        $groups_general = $query_group->get();
 
         $query = User::select(
             'users.id',
@@ -278,8 +284,17 @@ class UsersController extends Controller
     public function SaveUser()
     {
 
+        $user = Auth::user();
         $campaigns = Campain::get();
-        $company = Company::findOrFail(1);
+
+        if ($user->id === 44) {
+            $company = Company::findOrFail(1);
+        } else {
+            $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->where('user_groups.group_id', 14)
+                ->where('user_groups.user_id', $user->id)
+                ->first();
+        }
 
         $id = request('id');
         $name = request('name');
@@ -293,12 +308,16 @@ class UsersController extends Controller
         if (isset($id)) {
             $element = User::findOrFail($id);
 
+            $Variable = $element->email;
+            $pos = strpos($Variable, '@');
+            $result = substr($Variable, $pos);
+
             if ($name) {
                 $element->name = $name;
             }
 
             if ($email) {
-                $element->email = $email . $company->sufijo;
+                $element->email = $email . $result;
             }
 
             if ($password) {

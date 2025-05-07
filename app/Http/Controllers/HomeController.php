@@ -51,20 +51,20 @@ class HomeController extends Controller
     {
         $userId = Auth::user()->id;
         $userGroup = UserGroup::where('user_id', $userId)
-                                ->first();
+            ->first();
 
         $result = [];
 
         if ($userGroup) {
 
             $group = Group::where('id', $userGroup->group_id)
-                            ->first();
+                ->first();
             $modulesGroup = ModuleInGroup::where('group_id', $group->id)
-                                        ->get();
+                ->get();
             $sectionsGroup = SectionInGroup::where('group_id', $group->id)
-                                            ->get();
+                ->get();
             $subSectionsGroup = SubSectionInGroup::where('group_id', $group->id)
-                                                ->get();
+                ->get();
 
             $modulesIds = [];
             foreach ($modulesGroup as $moduleGroup) {
@@ -82,17 +82,16 @@ class HomeController extends Controller
             };
 
             $modules = Module::whereIn('id', $modulesIds)
-                            ->get();
+                ->get();
             $sections = Section::whereIn('id', $sectionsIds)
-                                ->orderBy('order','asc')
-                                ->get();
+                ->orderBy('order', 'asc')
+                ->get();
             $subSections = SubSection::whereIn('id', $subSectionsIds)
-                                    ->get();
+                ->get();
 
             $result = $modules->map(function ($module) use ($sections, $subSections) {
 
-                $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections)
-                {
+                $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections) {
                     $sectionSubSections = $subSections->where('section_id', $section->id);
 
                     $section->subSections = $sectionSubSections->values();
@@ -117,31 +116,31 @@ class HomeController extends Controller
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
-       return view('index', compact('modules','company','user'));
+        return view('index', compact('modules', 'company', 'user'));
     }
 
     public function enterprise()
     {
         $company = Company::findOrFail(1);
         $logins = Logins::orderBy('created_at', 'desc')
-                        ->get();
+            ->get();
         $modules = $this->modules();
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
-        return view('enterprise-timeline', compact('modules','logins','user','company'));
+        return view('enterprise-timeline', compact('modules', 'logins', 'user', 'company'));
     }
 
     public function sales()
     {
         $company = Company::findOrFail(1);
         $forms = Form::orderBy('created_at', 'desc')
-                        ->get();
+            ->get();
         $modules = $this->modules();
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
-        return view('sales-timeline', compact('modules','forms','user','company'));
+        return view('sales-timeline', compact('modules', 'forms', 'user', 'company'));
     }
 
     /*Language Translation*/

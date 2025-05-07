@@ -54,6 +54,10 @@ class TabStatesController extends Controller
         $modules = $this->modules();
         $id = NULL;
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+        ->select(
+            'campains.id as id',
+            'campains.name as name',
+        )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
