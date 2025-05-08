@@ -276,11 +276,8 @@ class StatesController extends Controller
         $element->save();
 
         if (isset($id)) {
-            if ($state_state) {
-                foreach ($state_state as $stateId) {
-                    StateState::where('from_state_id', $id)->where('to_state_id', $stateId)->delete();
-                }
-            }
+            
+            StateState::where('from_state_id', $id)->delete();
         }
 
         $stateStateData = [];
