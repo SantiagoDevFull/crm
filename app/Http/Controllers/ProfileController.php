@@ -154,8 +154,19 @@ class ProfileController extends Controller
             $sections = Section::whereIn('id', $sectionsIds)
                                 ->orderBy('order','asc')
                                 ->get();
+           /*
+        $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->get();
+            */
             $subSections = SubSection::whereIn('id', $subSectionsIds)
-                                    ->get();
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
+            ->get();
 
             $result = $modules->map(function ($module) use ($sections, $subSections) {
 

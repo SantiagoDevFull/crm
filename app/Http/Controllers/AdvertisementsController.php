@@ -62,22 +62,22 @@ class AdvertisementsController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
-        return view('advertisements', compact('campaigns','advertisements','groups','groups_advertisements','modules','user','company'));
+        return view('advertisements', compact('campaigns', 'advertisements', 'groups', 'groups_advertisements', 'modules', 'user', 'company'));
     }
 
     public function modules()
     {
         $userId = Auth::user()->id;
         $userGroup = UserGroup::where('user_id', $userId)
-                                ->first();
+            ->first();
         $group = Group::where('id', $userGroup->group_id)
-                        ->first();
+            ->first();
         $modulesGroup = ModuleInGroup::where('group_id', $group->id)
-                                    ->get();
+            ->get();
         $sectionsGroup = SectionInGroup::where('group_id', $group->id)
-                                        ->get();
+            ->get();
         $subSectionsGroup = SubSectionInGroup::where('group_id', $group->id)
-                                            ->get();
+            ->get();
 
         $modulesIds = [];
         foreach ($modulesGroup as $moduleGroup) {
@@ -95,17 +95,27 @@ class AdvertisementsController extends Controller
         };
 
         $modules = Module::whereIn('id', $modulesIds)
-                        ->get();
+            ->get();
         $sections = Section::whereIn('id', $sectionsIds)
-                            ->orderBy('order','asc')
-                            ->get();
+            ->orderBy('order', 'asc')
+            ->get();
+        /*
         $subSections = SubSection::whereIn('id', $subSectionsIds)
-                                ->get();
+            ->get();
+            */
+            $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
+            ->get();
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {
 
-            $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections)
-            {
+            $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections) {
                 $sectionSubSections = $subSections->where('section_id', $section->id);
 
                 $section->subSections = $sectionSubSections->values();
@@ -239,17 +249,17 @@ class AdvertisementsController extends Controller
         $id = request('id');
         $advertisement = Advertisement::findOrFail($id);
         $groups_advertisements = GroupAdvertisement::where('advertisement_id', $id)
-                                                            ->leftjoin('groups', 'groups.id', '=', 'groups_advertisements.group_id')
-                                                            ->select(
-                                                                'groups.id as id',
-                                                                'groups.name as name',
-                                                            )
-                                                            ->get();
+            ->leftjoin('groups', 'groups.id', '=', 'groups_advertisements.group_id')
+            ->select(
+                'groups.id as id',
+                'groups.name as name',
+            )
+            ->get();
 
         return response()->json([
-                                'advertisement'       => $advertisement,
-                                'group_advertisement' => $groups_advertisements,
-                            ]);
+            'advertisement'       => $advertisement,
+            'group_advertisement' => $groups_advertisements,
+        ]);
     }
 
     public function DeleteAdvertisement($id)

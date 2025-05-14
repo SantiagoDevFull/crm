@@ -123,7 +123,18 @@ class CampaignsController extends Controller
         $sections = Section::whereIn('id', $sectionsIds)
             ->orderBy('order', 'asc')
             ->get();
+        /*
         $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->get();
+            */
+            $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
             ->get();
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {
@@ -248,6 +259,12 @@ class CampaignsController extends Controller
             $sub_section->url = "sales/solds/$campain->id";
             $sub_section->created_at_user = Auth::user()->name;
             $sub_section->save();
+
+            $sub_section_in_group = new SubSectionInGroup();
+            $sub_section_in_group->sub_section_id = $sub_section->id;
+            $sub_section_in_group->group_id = 14;
+            $sub_section_in_group->created_at_user = Auth::user()->name;
+            $sub_section_in_group->save();
         }
 
         if (isset($id)) {

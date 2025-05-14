@@ -47,7 +47,7 @@ class UsersController extends Controller
         $modules = $this->modules();
         $campaigns = Campain::get();
 
-        $userId = Auth::user()->id;
+        $user = Auth::user();
 
         $query_group = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
             ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
@@ -56,14 +56,12 @@ class UsersController extends Controller
                 'groups.id as id',
                 'groups.name as name'
             )
-            ->where('user_groups.user_id', $userId);
+            ->where('groups.created_at_user', $user->name);
         //->where('groups.id', 14);
 
-        if ($userId != 44) {
-            $query_group->where('user_groups.user_id', $userId);
-        }
 
         $groups_general = $query_group->get();
+
 
         $query = User::select(
             'users.id',
@@ -91,10 +89,11 @@ class UsersController extends Controller
             'users.foto_doc',
             'users.curriculum',
             'users.contrato'
-        );
+        )
+            ->where('users.user_id', $user->id);
 
-        if ($userId != 44) {
-            $query->where('users.user_id', $userId);
+        if ($user->id != 44) {
+            $query->where('users.user_id', $user->id);
         }
 
         $users = $query->get();
@@ -108,16 +107,52 @@ class UsersController extends Controller
             ->leftjoin('groups', 'groups.id', '=', 'user_groups.group_id')
             ->get();
 
-        $user = User::findOrFail($userId);
+        $user = User::findOrFail($user->id);
 
         if ($user->id === 44) {
             $company = Company::findOrFail(1);
         } else {
+
             $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
-                ->where('user_groups.group_id', 14)
-                ->where('user_groups.user_id', $userId)
+                ->select(
+                    'companies.id as id',
+                    'companies.name as name',
+                    'companies.short_name as short_name',
+                    'companies.document as document',
+                    'companies.pais as pais',
+                    'companies.contact as contact',
+                    'companies.asist_type as asist_type',
+                    'companies.sufijo as sufijo',
+                    'companies.menu_color as menu_color',
+                    'companies.text_color as text_color',
+                    'companies.logo as logo',
+                    'user_groups.user_id as dif',
+                )
+                ->where('user_groups.user_id', $user->id)
                 ->first();
+
+            if (!$company) {
+                $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                    ->select(
+                        'companies.id as id',
+                        'companies.name as name',
+                        'companies.short_name as short_name',
+                        'companies.document as document',
+                        'companies.pais as pais',
+                        'companies.contact as contact',
+                        'companies.asist_type as asist_type',
+                        'companies.sufijo as sufijo',
+                        'companies.menu_color as menu_color',
+                        'companies.text_color as text_color',
+                        'companies.logo as logo',
+                        'user_groups.user_id as dif',
+                    )
+                    ->where('user_groups.user_id', $user->user_id)
+                    ->first();
+            }
         }
+
+
 
         return view('users', compact('users', 'company', 'groups_general', 'groups', 'campaigns', 'modules', 'user', 'company'));
     }
@@ -156,7 +191,18 @@ class UsersController extends Controller
         $sections = Section::whereIn('id', $sectionsIds)
             ->orderBy('order', 'asc')
             ->get();
+        /*
         $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->get();
+            */
+        $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
             ->get();
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {

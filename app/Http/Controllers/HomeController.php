@@ -86,8 +86,19 @@ class HomeController extends Controller
             $sections = Section::whereIn('id', $sectionsIds)
                 ->orderBy('order', 'asc')
                 ->get();
+            /*
+        $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->get();
+            */
             $subSections = SubSection::whereIn('id', $subSectionsIds)
-                ->get();
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
+            ->get();
 
             $result = $modules->map(function ($module) use ($sections, $subSections) {
 
@@ -112,9 +123,61 @@ class HomeController extends Controller
     public function root()
     {
         $modules = $this->modules();
-        $company = Company::findOrFail(1);
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
+        // $company = Company::findOrFail(1);
+
+        $userLogued = Auth::user();
+        $user = User::leftjoin('user_groups', 'user_groups.user_id', '=', 'users.id')
+            ->leftjoin('companies', 'companies.user_group_id', '=', 'user_groups.id')
+            ->select(
+                'users.id as id',
+                'users.name as name',
+                'users.user_id as user_id'
+            )
+            ->where('user_groups.user_id', $userLogued->id)
+            ->first();
+
+        if ($userLogued->id == 44) {
+            $company = Company::findOrFail(1);
+        } else {
+
+            $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->select(
+                    'companies.id as id',
+                    'companies.name as name',
+                    'companies.short_name as short_name',
+                    'companies.document as document',
+                    'companies.pais as pais',
+                    'companies.contact as contact',
+                    'companies.asist_type as asist_type',
+                    'companies.sufijo as sufijo',
+                    'companies.menu_color as menu_color',
+                    'companies.text_color as text_color',
+                    'companies.logo as logo',
+                    'user_groups.user_id as dif',
+                )
+                ->where('user_groups.user_id', $userLogued->id)
+                ->first();
+
+            if (!$company) {
+                $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                    ->select(
+                        'companies.id as id',
+                        'companies.name as name',
+                        'companies.short_name as short_name',
+                        'companies.document as document',
+                        'companies.pais as pais',
+                        'companies.contact as contact',
+                        'companies.asist_type as asist_type',
+                        'companies.sufijo as sufijo',
+                        'companies.menu_color as menu_color',
+                        'companies.text_color as text_color',
+                        'companies.logo as logo',
+                        'user_groups.user_id as dif',
+                    )
+                    ->where('user_groups.user_id', $user->user_id)
+                    ->first();
+            }
+        }
 
         return view('index', compact('modules', 'company', 'user'));
     }

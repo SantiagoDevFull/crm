@@ -85,7 +85,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" for="ip">IP:</label>
-                    <input type="text" class="form-control" id="ip" name="ip" required>
+                    <input type="text" class="form-control" id="ip" name="ip">
                     <div class="valid-feedback">Valido!</div>
                     <div class="invalid-feedback">La IP es requerida.</div>
                 </div>
@@ -231,7 +231,6 @@
 
         function getModules(groupId) {
             const dataFilter = modulesGroup.filter(i => i.group_id == +groupId);
-
             return dataFilter;
         };
 
@@ -303,12 +302,16 @@
         function checkPermissions(modules, sections, subSections) {
             const tree = $(`#tree-container`).jstree(true);
 
+            /*
             modules.forEach(item => {
                 tree.check_node(`module_${item.module_id}`)
             });
+            */
+            /*
             sections.forEach(item => {
                 tree.check_node(`section_${item.section_id}`)
             });
+            */
             subSections.forEach(item => {
                 tree.check_node(`subSection_${item.sub_section_id}`)
             });
@@ -325,8 +328,21 @@
             });
 
             $('#tree-container').on('changed.jstree', function(e, data) {
-                let selectedNodes = data.selected;
-                $('#selected-nodes').val(JSON.stringify(selectedNodes));
+                let instance = data.instance;
+                let selectedIds = new Set(data.selected);
+
+                data.selected.forEach(function(id) {
+                    let node = instance.get_node(id);
+
+                    let parentId = node.parent;
+                    while (parentId && parentId !== '#') {
+                        selectedIds.add(parentId);
+                        parentId = instance.get_node(parentId).parent;
+                    }
+                });
+
+                const finalSelected = Array.from(selectedIds);
+                $('#selected-nodes').val(JSON.stringify(finalSelected));
             });
 
             $('#newEditGroup').on('click', '', function() {

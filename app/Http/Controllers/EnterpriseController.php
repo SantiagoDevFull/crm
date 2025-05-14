@@ -48,7 +48,7 @@ class EnterpriseController extends Controller
         $user = Auth::user();
 
 
-        $company = Company::leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+        $companyQuery = Company::leftJoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
             ->select(
                 'companies.id as id',
                 'companies.name as name',
@@ -59,12 +59,16 @@ class EnterpriseController extends Controller
                 'companies.asist_type as asist_type',
                 'companies.sufijo as sufijo',
                 'companies.logo as logo',
-            )
-            ->where('user_groups.group_id', 14)
-            ->where('user_groups.user_id', $user->id)
-            ->first();
+            );
 
-        echo $company;
+        if ($user->id == 44) {
+            $companyQuery->where('companies.id', 1);
+        } else {
+            $companyQuery->where('user_groups.group_id', 14)
+                ->where('user_groups.user_id', $user->id);
+        }
+
+        $company = $companyQuery->first();
 
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
@@ -106,7 +110,18 @@ class EnterpriseController extends Controller
         $sections = Section::whereIn('id', $sectionsIds)
             ->orderBy('order', 'asc')
             ->get();
+        /*
         $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->get();
+            */
+            $subSections = SubSection::whereIn('id', $subSectionsIds)
+            ->where(function ($query) {
+                $query->where('section_id', '!=', 5)
+                    ->orWhere(function ($q) {
+                        $q->where('section_id', 5)
+                            ->where('created_at_user', Auth::user()->name);
+                    });
+            })
             ->get();
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {
