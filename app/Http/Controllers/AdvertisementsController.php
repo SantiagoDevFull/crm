@@ -103,16 +103,31 @@ class AdvertisementsController extends Controller
         $subSections = SubSection::whereIn('id', $subSectionsIds)
             ->get();
             */
-            $subSections = SubSection::whereIn('id', $subSectionsIds)
-            ->where(function ($query) {
-                $query->where('section_id', '!=', 5)
-                    ->orWhere(function ($q) {
-                        $q->where('section_id', 5)
-                            ->where('created_at_user', Auth::user()->name);
-                    });
-            })
-            ->get();
-
+            $user = Auth::user();
+            if ($user->user_id == 44) {
+                $subSections = SubSection::whereIn('id', $subSectionsIds)
+                    ->where(function ($query) {
+                        $query->where('section_id', '!=', 5)
+                            ->orWhere(function ($q) {
+                                $q->where('section_id', 5)
+                                    ->where('created_at_user', Auth::user()->name);
+                            });
+                    })
+                    ->get();
+            } else {
+    
+                $admin = User::where('id', Auth::user()->user_id)->first();
+    
+                $subSections = SubSection::whereIn('id', $subSectionsIds)
+                    ->where(function ($query) use ($admin) {
+                        $query->where('section_id', '!=', 5)
+                            ->orWhere(function ($q) use ($admin) {
+                                $q->where('section_id', 5)
+                                    ->where('created_at_user', $admin->name);
+                            });
+                    })
+                    ->get();
+            }
         $result = $modules->map(function ($module) use ($sections, $subSections) {
 
             $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections) {

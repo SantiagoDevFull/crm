@@ -158,9 +158,9 @@ class GroupUsersController extends Controller
 
     public function modules()
     {
-        $user = Auth::user();
 
-        $userGroup = UserGroup::where('user_id', $user->id)
+        $userId = Auth::user()->id;
+        $userGroup = UserGroup::where('user_id', $userId)
             ->first();
         $group = Group::where('id', $userGroup->group_id)
             ->first();
@@ -200,6 +200,7 @@ class GroupUsersController extends Controller
             ->get();
             */
 
+        $user = Auth::user();
         if ($user->user_id == 44) {
             $subSections = SubSection::whereIn('id', $subSectionsIds)
                 ->where(function ($query) {

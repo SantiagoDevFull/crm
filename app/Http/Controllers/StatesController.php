@@ -67,7 +67,14 @@ class StatesController extends Controller
     public function indexWithId($id)
     {
         $modules = $this->modules();
-        $campaigns = Campain::get();
+        $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
+            ->select(
+                'campains.id as id',
+                'campains.name as name'
+            )
+            ->where('user_groups.group_id', 14)
+            ->where('user_groups.user_id', Auth::user()->id)
+            ->get();
         $tabStates = TabState::leftjoin('campains', 'campains.id', '=', 'tab_states.campain_id')
             ->select(
                 'tab_states.id as id',
@@ -146,15 +153,31 @@ class StatesController extends Controller
         $subSections = SubSection::whereIn('id', $subSectionsIds)
             ->get();
             */
+        $user = Auth::user();
+        if ($user->user_id == 44) {
             $subSections = SubSection::whereIn('id', $subSectionsIds)
-            ->where(function ($query) {
-                $query->where('section_id', '!=', 5)
-                    ->orWhere(function ($q) {
-                        $q->where('section_id', 5)
-                            ->where('created_at_user', Auth::user()->name);
-                    });
-            })
-            ->get();
+                ->where(function ($query) {
+                    $query->where('section_id', '!=', 5)
+                        ->orWhere(function ($q) {
+                            $q->where('section_id', 5)
+                                ->where('created_at_user', Auth::user()->name);
+                        });
+                })
+                ->get();
+        } else {
+
+            $admin = User::where('id', Auth::user()->user_id)->first();
+
+            $subSections = SubSection::whereIn('id', $subSectionsIds)
+                ->where(function ($query) use ($admin) {
+                    $query->where('section_id', '!=', 5)
+                        ->orWhere(function ($q) use ($admin) {
+                            $q->where('section_id', 5)
+                                ->where('created_at_user', $admin->name);
+                        });
+                })
+                ->get();
+        }
 
         $result = $modules->map(function ($module) use ($sections, $subSections) {
 
@@ -287,7 +310,7 @@ class StatesController extends Controller
         $element->save();
 
         if (isset($id)) {
-            
+
             StateState::where('from_state_id', $id)->delete();
         }
 

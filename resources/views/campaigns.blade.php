@@ -456,7 +456,7 @@
                         .catch(error => {
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'Ocurrio un error al intentar eliminar la campaña.',
+                                text: error,
                                 icon: 'error',
                                 confirmButtonColor: "#34c38f"
                             });
