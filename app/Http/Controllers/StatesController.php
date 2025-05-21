@@ -17,7 +17,7 @@ use App\Models\Section;
 use App\Models\SubSectionInGroup;
 use App\Models\SubSection;
 use App\Models\Form;
-
+use App\Models\StateGroup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -61,12 +61,75 @@ class StatesController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
-        return view('states', compact('id', 'campaigns', 'tabStates', 'states', 'stateStates', 'modules', 'user', 'company'));
+        $userId = Auth::user()->id;
+
+        $permisos = StateGroup::get();
+        if ($userId == 44) {
+            $grupos = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
+                ->select(
+                    'state_groups.group_id as id',
+                    'groups.name as name'
+                )
+                ->where('groups.created_at_user', Auth::user()->name)
+                ->groupBy('state_groups.group_id', 'groups.name')
+                ->get();
+            
+        } else {
+            $grupos = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
+                ->select(
+                    'state_groups.group_id as id',
+                    'groups.name as name'
+                )
+                ->where('user_groups.user_id', $userId)
+                ->where('user_groups.group_id', 14)
+                ->groupBy('state_groups.group_id', 'groups.name')
+                ->get();
+        }
+
+        return view('states', compact('id', 'campaigns', 'tabStates', 'states', 'stateStates', 'modules', 'user', 'company','grupos', 'permisos'));
     }
 
     public function indexWithId($id)
     {
         $modules = $this->modules();
+        $permisos = StateGroup::get();
+        $userId = Auth::user()->id;
+
+        if ($userId == 44) {
+            $grupos = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
+                ->select(
+                    'state_groups.group_id as id',
+                    'groups.name as name'
+                )
+                ->where('groups.created_at_user', Auth::user()->name)
+                ->groupBy('state_groups.group_id', 'groups.name')
+                ->get();
+            
+        } else {
+            $grupos = Group::leftjoin('horarios', 'horarios.id', '=', 'groups.horario_id')
+                ->leftjoin('companies', 'companies.id', '=', 'groups.company_id')
+                ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
+                ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
+                ->select(
+                    'state_groups.group_id as id',
+                    'groups.name as name'
+                )
+                ->where('user_groups.user_id', $userId)
+                ->where('user_groups.group_id', 14)
+                ->groupBy('state_groups.group_id', 'groups.name')
+                ->get();
+        }
+
+
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
             ->select(
                 'campains.id as id',
@@ -112,7 +175,7 @@ class StatesController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
-        return view('states', compact('id', 'campaigns', 'tabStates', 'states', 'stateStates', 'modules', 'user', 'company'));
+        return view('states', compact('id', 'campaigns', 'tabStates', 'states', 'stateStates', 'modules', 'user', 'company', 'grupos', 'permisos'));
     }
 
     public function modules()
@@ -279,6 +342,7 @@ class StatesController extends Controller
         $age = request('age') ? request('age') : 'off';
         $com = request('com') ? request('com') : 'off';
         $state_state = request('states');
+        $grupos = request('grupos');
 
         if (isset($id)) {
             $element =  State::findOrFail($id);
@@ -326,6 +390,21 @@ class StatesController extends Controller
         }
 
         StateState::insert($stateStateData);
+
+        //grupos
+        $stateGroups = [];
+        if ($grupos) {
+            foreach ($grupos as $grupo) {
+                $stateGroups[] = [
+                    'state_id' => $element->id,
+                    'group_id' => $grupo,
+                    'created_at_user' => Auth::user()->name,
+                ];
+            }
+        }
+
+        StateGroup::where('state_id', $element->id)->delete();
+        StateGroup::insert($stateGroups);
 
         $campaigns = Campain::get();
         $tabStates = TabState::leftjoin('campains', 'campains.id', '=', 'tab_states.campain_id')

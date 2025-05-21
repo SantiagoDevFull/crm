@@ -10,14 +10,29 @@
 
 @section('content')
     @component('common-components.breadcrumb')
-        @slot('pagetitle') Configuración de Campañas @endslot
-        @slot('title') Estados @endslot
+        @slot('pagetitle')
+            Configuración de Campañas
+        @endslot
+        @slot('title')
+            Estados
+        @endslot
     @endcomponent
 
     <x-select-section :idForm="'form_campaign'" :idSelect="'id_campaign'" :nameLabel="'Seleccionar Campaña'" :options="$campaigns"></x-select-section>
 
     @if ($id)
-        <x-table :idCreateButton="'newEditState'" :idModal="'editState'" :textButton="'Crear Estado'" :headers="['CAMPAÑA','NOMBRE','PESTAÑA','ORDEN','COLOR','RESALTAR EN NOTIFICACIONES','ESTADO ES AGENDADO','ESTADO ES COMISIONABLE','ESTADO','OPCIONES']">
+        <x-table :idCreateButton="'newEditState'" :idModal="'editState'" :textButton="'Crear Estado'" :headers="[
+            'CAMPAÑA',
+            'NOMBRE',
+            'PESTAÑA',
+            'ORDEN',
+            'COLOR',
+            'RESALTAR EN NOTIFICACIONES',
+            'ESTADO ES AGENDADO',
+            'ESTADO ES COMISIONABLE',
+            'ESTADO',
+            'OPCIONES',
+        ]">
             @foreach ($states as $state)
                 <tr data-id="{{ $state->id }}">
                     <td data-field="campaña">
@@ -62,15 +77,18 @@
                     </td>
                     <td data-field="estado">
                         <div data-state-id="{{ $state->id }}">
-                            <input type="checkbox" id="switch-{{ $state->id }}" switch="bool" {{ $state->state == "1" ? 'checked' : '' }} />
+                            <input type="checkbox" id="switch-{{ $state->id }}" switch="bool"
+                                {{ $state->state == '1' ? 'checked' : '' }} />
                             <label for="switch-{{ $state->id }}" data-on-label="On" data-off-label="Off"></label>
                         </div>
                     </td>
                     <td style="width: 100px" data-field="opciones">
-                        <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit" data-state-id="{{ $state->id }}" data-bs-toggle="modal" data-bs-target="#editState">
+                        <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit"
+                            data-state-id="{{ $state->id }}" data-bs-toggle="modal" data-bs-target="#editState">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete" data-state-id="{{ $state->id }}">
+                        <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete"
+                            data-state-id="{{ $state->id }}">
                             <i class="fas uil-trash-alt"></i>
                         </button>
                     </td>
@@ -107,7 +125,8 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" for="color">Color:</label>
-                    <input type="color" class="form-control form-control-color w-full" id="color" name="color" style="width: 100%;" required>
+                    <input type="color" class="form-control form-control-color w-full" id="color" name="color"
+                        style="width: 100%;" required>
                     <div class="valid-feedback">Valido!</div>
                     <div class="invalid-feedback">El color es requerido.</div>
                 </div>
@@ -138,8 +157,10 @@
         <div class="row" id="row-states">
             <div class="col-md-12">
                 <div class="mb-3">
-                    <label class="form-label" for="states">Estados sobre los que se va a cambiar la venta a este estado:</label>
-                    <select class="select2 form-control select2-multiple" id="states" name="states[]" style="width: 100%;" multiple="multiple" data-placeholder="Selecciona">
+                    <label class="form-label" for="states">Estados sobre los que se va a cambiar la venta a este
+                        estado:</label>
+                    <select class="select2 form-control select2-multiple" id="states" name="states[]"
+                        style="width: 100%;" multiple="multiple" data-placeholder="Selecciona">
                         <option value="0" selected>Seleccionar</option>
                         @foreach ($states as $state)
                             <option value="{{ $state->id }}">{{ $state->name }}</option>
@@ -148,6 +169,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="row" id="row-grupos">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label class="form-label" for="grupos">Grupos con permisos de visualizar los estados:</label>
+                    <select class="select2 form-control select2-multiple" id="grupos" name="grupos[]"
+                        style="width: 100%;" multiple="multiple" data-placeholder="Selecciona">
+                        <option value="0" selected>Seleccionar</option>
+                        @foreach ($grupos as $grupo)
+                            <option value="{{ $grupo->id }}">{{ $grupo->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3" style="display: flex; align-items: center; justify-content: start; column-gap: 4px;">
@@ -177,7 +214,7 @@
 
 @endsection
 @section('script')
-<script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/select2/select2.min.js') }}"></script>
@@ -186,10 +223,12 @@
         const id = @json($id);
         const campaigns = @json($campaigns);
         const states = @json($states);
+        const grupos = @json($grupos);
+        const permisos = @json($permisos);
         const tabStates = @json($tabStates);
         const titleEdit = $('#editStateTitle')[0];
         const stateStates = @json($stateStates);
-		const forms = document.getElementsByClassName('needs-validation');
+        const forms = document.getElementsByClassName('needs-validation');
 
         if (id) {
             $('#id_campaign').val(id);
@@ -211,13 +250,19 @@
             $('#age').prop("checked", 0);
             $('#com').prop("checked", 0);
             $('#states').val([]).trigger('change');
+            $('#grupos').val([]).trigger('change');
         };
+
         function loadData(ID) {
             $('#editState').removeClass('was-validated');
             $('#editState').addClass('needs-validated');
             let stateData;
 
             const groupStates = stateStates.filter(i => i.from_state_id == +ID);
+            const groupStates_2 = permisos.filter(i => i.state_id == +ID);
+            // alert(+ID);
+            //alert(JSON.stringify(groupStates_2, null, 2));
+
 
             for (let i = 0; i < states.length; i++) {
                 const state = states[i];
@@ -243,6 +288,8 @@
                 } = stateData;
 
                 const statesID = groupStates.map(i => i.to_state_id);
+                const gruposID = groupStates_2.map(i => i.group_id);
+
 
                 $('#id').val(id);
                 $('#name').val(name);
@@ -257,6 +304,7 @@
                 if (com == "on") $('#com').prop("checked", 1);
 
                 $('#states').val(statesID).trigger('change');
+                $('#grupos').val(gruposID).trigger('change');
             };
         };
 
@@ -268,26 +316,32 @@
                 dropdownParent: $('#editState')
             });
 
-            $('#state_user').on('change', function (e) {
+            $('#grupos').select2({
+                dropdownParent: $('#editState')
+            });
+
+            $('#state_user').on('change', function(e) {
                 const val = e.target.value;
 
                 if (val == "1" || val == "2") {
-                    $('#row-states').css('display','flex');
+                    $('#row-states').css('display', 'flex');
+                    $('#row-grupos').css('display', 'flex');
                 } else {
-                    $('#row-states').css('display','none');
+                    $('#row-states').css('display', 'none');
+                    $('#row-grupos').css('display', 'none');
                 };
             });
 
-            $('#newEditState').on('click', '', function () {
+            $('#newEditState').on('click', '', function() {
                 reinitData();
                 titleEdit.innerText = "Nuevo Estado";
             });
 
-            $('#editState').on('click', 'btn-close', function () {
+            $('#editState').on('click', 'btn-close', function() {
                 reinitData();
             });
 
-            $('#datatable tbody').on('click', '.btn.edit', function () {
+            $('#datatable tbody').on('click', '.btn.edit', function() {
                 titleEdit.innerText = "Editar Estado";
 
                 reinitData();
@@ -299,7 +353,7 @@
                 $('#editState').modal('show');
             });
 
-            $('#datatable tbody').on('dblclick', 'tr td div', function () {
+            $('#datatable tbody').on('dblclick', 'tr td div', function() {
                 reinitData();
 
                 const stateId = this.dataset.stateId;
@@ -309,7 +363,7 @@
                 $('#editState').modal('show');
             });
 
-            $('#datatable tbody').on('click', '.btn.delete', function () {
+            $('#datatable tbody').on('click', '.btn.delete', function() {
                 const stateId = this.dataset.stateId;
 
                 Swal.fire({
@@ -322,50 +376,52 @@
                     confirmButtonClass: 'btn btn-success mt-2',
                     cancelButtonClass: 'btn btn-danger ms-2 mt-2',
                     buttonsStyling: false
-                }).then(function (result) {
+                }).then(function(result) {
                     if (result.value) {
                         fetch(`{{ route('DeleteState', '') }}/${stateId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            const { error } = data;
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                const {
+                                    error
+                                } = data;
 
-                            if (error) {
+                                if (error) {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error,
+                                        icon: 'error',
+                                        confirmButtonColor: "#34c38f"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Eliminado!',
+                                        text: 'Campaña eliminado.',
+                                        icon: 'success',
+                                        confirmButtonColor: "#34c38f"
+                                    }).then(function() {
+                                        window.location.reload();
+                                    })
+                                }
+                            })
+                            .catch(error => {
                                 Swal.fire({
                                     title: 'Error!',
-                                    text: error,
+                                    text: error.error,
                                     icon: 'error',
                                     confirmButtonColor: "#34c38f"
                                 });
-                            } else {
-                                Swal.fire({
-                                    title: 'Eliminado!',
-                                    text: 'Campaña eliminado.',
-                                    icon: 'success',
-                                    confirmButtonColor: "#34c38f"
-                                }).then(function () {
-                                    window.location.reload();
-                                })
-                            }
-                        })
-                        .catch(error => {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: error.error, 
-                                icon: 'error',
-                                confirmButtonColor: "#34c38f"
                             });
-                        });
                     };
                 });
             });
 
-            $('#form_campaign').on('submit', '', function (e) {
+            $('#form_campaign').on('submit', '', function(e) {
                 e.preventDefault();
 
                 const campaignId = $('#id_campaign').val();

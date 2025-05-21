@@ -73,6 +73,8 @@ class EnterpriseController extends Controller
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
+        
+
         return view('enterprise', compact('company', 'campaigns', 'modules', 'user'));
     }
 

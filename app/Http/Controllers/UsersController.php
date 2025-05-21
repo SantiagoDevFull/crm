@@ -152,7 +152,7 @@ class UsersController extends Controller
             }
         }
 
-
+        
 
         return view('users', compact('users', 'company', 'groups_general', 'groups', 'campaigns', 'modules', 'user', 'company'));
     }

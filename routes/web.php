@@ -116,7 +116,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::get('/sales/agents', [App\Http\Controllers\AgentsController::class, 'index']);
     Route::get('/sales/agents/{id}', [App\Http\Controllers\AgentsController::class, 'indexWithId']);
     Route::get('/sales/solds/{id}', [App\Http\Controllers\SoldsController::class, 'index'])->name('dashboard.sold.index');
-    Route::get('/sales/solds/{id}/{tab_state_id}', [App\Http\Controllers\SoldsController::class, 'indexWithTabStateId']);
+    Route::get('/sales/solds/{id}/{tab_state_id}',   [App\Http\Controllers\SoldsController::class, 'indexWithTabStateId']);
     Route::get('/sales/solds/{id}/{tab_state_id}/{form_id}', [App\Http\Controllers\SoldsController::class, 'indexWithFormId']);
 
     Route::get('/sales/solds-export/{id}/{tab_state_id}', [App\Http\Controllers\SoldsController::class, 'export']);

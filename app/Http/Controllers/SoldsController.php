@@ -29,6 +29,7 @@ use App\Models\ModuleInGroup;
 use App\Models\Module;
 use App\Models\SectionInGroup;
 use App\Models\Section;
+use App\Models\StateGroup;
 use App\Models\StateState;
 use App\Models\SubSectionInGroup;
 use App\Models\SubSection;
@@ -279,15 +280,42 @@ class SoldsController extends Controller
             ->get();
         $stateIds = $state->pluck('id')->toArray();
 
-        $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
+
+        $userId = Auth::user()->id;
+        $grupos_users = UserGroup::leftjoin('groups', 'groups.id', '=', 'user_groups.group_id')
             ->select(
-                'states_states.to_state_id as id',
-                'states.name as name'
+                'groups.name as group_name',
+                'user_groups.group_id as group_id',
+                'user_groups.user_id as user_id'
             )
-            ->whereIn('from_state_id', $stateIds)
+            ->where('user_id', Auth::user()->id)
             ->get();
+        $gruposIds = $grupos_users->pluck('group_id')->toArray();
 
+        $state_groups = StateGroup::whereIn('group_id', $gruposIds)->get();
+        $newStatesIds = $state_groups->pluck('state_id')->toArray();
 
+        $isAdmin = UserGroup::where('user_id', $userId)->where('group_id', 14)->first();
+
+        if ($isAdmin) {
+            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
+                ->select(
+                    'states_states.to_state_id as id',
+                    'states.name as name'
+                )
+                ->whereIn('from_state_id', $stateIds)
+                //->whereIn('states_states.from_state_id', $newStatesIds)
+                ->get();
+        } else {
+            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
+                ->select(
+                    'states_states.to_state_id as id',
+                    'states.name as name'
+                )
+                ->whereIn('from_state_id', $newStatesIds)
+                //->whereIn('states_states.from_state_id', $newStatesIds)
+                ->get();
+        }
 
         $fields = Field::where('fields.campain_id', $id)
             ->whereIn('fields.id', $field_ids)
@@ -307,7 +335,7 @@ class SoldsController extends Controller
         $fields = $fields->toArray();
 
         $form = NULL;
-        $userId = Auth::user()->id;
+
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
