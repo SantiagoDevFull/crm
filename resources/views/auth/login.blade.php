@@ -2,9 +2,12 @@
 @section('title')
     @lang('translation.Login')
 @endsection
+
 @section('content')
     <div class="account-pages my-5 pt-sm-5">
         <div class="container">
+
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="text-center">
@@ -29,7 +32,8 @@
 
                                     <div class="mb-3">
                                         <label class="form-label" for="email">Email</label>
-                                        <input type="text" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="Ingresar usuario">
+                                        <input type="text" class="form-control @error('email') is-invalid @enderror"
+                                            name="email" id="email" placeholder="Ingresar usuario">
                                         @error('email')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -45,7 +49,8 @@
                                             @endif --}}
                                         </div>
                                         <label class="form-label" for="userpassword">Contraseña</label>
-                                        <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="userpassword" placeholder="Ingresar contraseña">
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                            name="password" id="userpassword" placeholder="Ingresar contraseña">
                                         @error('password')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -60,7 +65,8 @@
                                     </div>
 
                                     <div class="mt-3 text-end">
-                                        <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Ingresar</button>
+                                        <button class="btn btn-primary w-sm waves-effect waves-light"
+                                            type="submit">Ingresar</button>
                                     </div>
 
                                     {{-- <div class="mt-4 text-center">

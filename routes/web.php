@@ -22,6 +22,7 @@ Route::middleware(['check.user.ip'])->group(function () {
     Route::get('/enterprise', [App\Http\Controllers\HomeController::class, 'enterprise'])->name('dashboard.home.enterprise');
     Route::get('/sales', [App\Http\Controllers\HomeController::class, 'sales'])->name('dashboard.home.sales');
 
+
     // esta ruta evita renderizar mas vistas
     // Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
     //Language Translation

@@ -437,7 +437,8 @@ class SoldsController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
-        return view('forms', compact('id', 'form_id', 'campaigns', 'tab_state_id', 'campaign', 'fields', 'blocks', 'states', 'form', 'modules', 'user', 'company'));
+        echo $states;
+       return view('forms', compact('id', 'form_id', 'campaigns', 'tab_state_id', 'campaign', 'fields', 'blocks', 'states', 'form', 'modules', 'user', 'company'));
     }
 
     public function modules()

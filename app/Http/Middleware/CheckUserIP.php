@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\UserGroup;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class CheckUserIP
@@ -38,7 +39,8 @@ class CheckUserIP
             });
 
             if (!$group) {
-                abort(403, 'Acceso denegado.');
+                Auth::logout();
+                return redirect('/');
             }
         }
 

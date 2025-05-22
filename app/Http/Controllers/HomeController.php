@@ -102,9 +102,9 @@ class HomeController extends Controller
                     })
                     ->get();
             } else {
-    
+
                 $admin = User::where('id', Auth::user()->user_id)->first();
-    
+
                 $subSections = SubSection::whereIn('id', $subSectionsIds)
                     ->where(function ($query) use ($admin) {
                         $query->where('section_id', '!=', 5)
