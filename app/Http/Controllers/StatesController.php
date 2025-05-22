@@ -107,11 +107,11 @@ class StatesController extends Controller
                 ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
                 ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
                 ->select(
-                    'state_groups.group_id as id',
+                    'groups.id as id',
                     'groups.name as name'
                 )
                 ->where('groups.created_at_user', Auth::user()->name)
-                ->groupBy('state_groups.group_id', 'groups.name')
+                ->groupBy('groups.id', 'groups.name')
                 ->get();
             
         } else {
@@ -120,14 +120,15 @@ class StatesController extends Controller
                 ->leftjoin('user_groups', 'user_groups.id', '=', 'companies.user_group_id')
                 ->leftjoin('state_groups', 'state_groups.group_id', '=', 'groups.id')
                 ->select(
-                    'state_groups.group_id as id',
+                    'groups.id as id',
                     'groups.name as name'
                 )
                 ->where('user_groups.user_id', $userId)
                 ->where('user_groups.group_id', 14)
-                ->groupBy('state_groups.group_id', 'groups.name')
+                ->groupBy('groups.id', 'groups.name')
                 ->get();
         }
+
 
 
         $campaigns = Campain::leftjoin('user_groups', 'user_groups.id', '=', 'campains.user_group_id')
