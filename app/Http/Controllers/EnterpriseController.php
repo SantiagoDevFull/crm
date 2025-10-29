@@ -265,10 +265,13 @@ class EnterpriseController extends Controller
         }
 
 
-        $originalFullName = $logo->getClientOriginalName();
+        if($logo){
+            $originalFullName = $logo->getClientOriginalName();
+            $destination = public_path('assets/photos');
+            $logo->move($destination, $originalFullName);
 
-        $folder = 'public/uploads';
-        $path = $logo->storeAs($folder, $originalFullName);
+            $company->logo = $originalFullName;
+        }
 
         $company->name = $name;
         $company->short_name = $short_name;
@@ -277,7 +280,7 @@ class EnterpriseController extends Controller
         $company->contact = $contact;
         $company->asist_type = $asist_type;
         $company->sufijo = $sufijo;
-        $company->logo = $originalFullName;
+       
         $company->menu_color = $menu_color;
         $company->text_color = $text_color;
         $company->created_at_user = Auth::user()->name;
@@ -286,12 +289,12 @@ class EnterpriseController extends Controller
         if (!isset($id)) {
             $obj = new File();
             $obj->name = $originalFullName;
-            $obj->path = $path;
+            $obj->path = 'assets/photos'.$originalFullName;
             $obj->state = 1;
             $obj->created_at_user = Auth::user()->name;
             $obj->save();
         }
 
-        return redirect('/enterprise/companies');
+        return redirect('/enterprise/config');
     }
 }

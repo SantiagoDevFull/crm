@@ -103,26 +103,26 @@
                                     <div class="invalid-feedback">El sufijo del usuario es requerido.</div>
                                 </div>
                             </div>
-                            {{-- 
-                             <div class="col-md-4">
+                            
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label" for="logo">Logo de la Empresa</label>
                                     <input type="file" class="form-control" id="logo" name="logo" accept="image/*" value="{{ $company->logo }}">
                                 </div>
                             </div>
-                            --}}
+                            
 
                         </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label" for="logo">Logo de la Empresa</label>
-                                    <img src="{{ url('/storage/uploads', $company->logo) }}" alt="logo"
+                                    <img src="{{ URL::asset('assets/photos/'. $company->logo) }}" alt="logo"
                                         style="width: 100%; height: auto;">
                                 </div>
                             </div>
                         </div>
-                        {{-- <button class="btn btn-primary" type="submit">Guardar</button> --}}
+                        <button class="btn btn-primary" type="submit">Guardar</button> 
                     </form>
                 </div>
             </div>

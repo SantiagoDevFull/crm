@@ -304,13 +304,14 @@
             };
 
             if (fieldData) {
+               
                 const {
                     id,
                     name,
                     order,
                     block_id,
                     type_field_id,
-                    width_id,
+                    width_col,
                     required,
                     unique,
                     bloq_mayus,
@@ -330,7 +331,7 @@
                 $('#order').val(order);
                 $('#block_id').val(block_id);
                 $('#type_field_id').val(type_field_id);
-                $('#width_id').val(width_id);
+                $('#width_id').val(width_col);
 
                 $('#tab_states').val(tabStateIds).trigger('change');
                 $('#edits').val(fieldEditIds).trigger('change');

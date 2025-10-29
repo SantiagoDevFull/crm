@@ -48,8 +48,8 @@ class ProfileController extends Controller
         $userId = Auth::user()->id;
         $user = User::where('id', $userId)->first();
         $logins = Logins::where('user_id', $userId)
-                        ->orderBy('created_at', 'asc')
-                        ->get();
+            ->orderBy('created_at', 'asc')
+            ->get();
         $userGroup = UserGroup::where('user_id', $userId)->first();
 
         $group = (object) [
@@ -63,36 +63,36 @@ class ProfileController extends Controller
 
             $group = Group::where('id', $userGroup->group_id)->first();
             $groupAdvertisement = GroupAdvertisement::where('group_id', $group->id)
-                                                    ->orderBy('created_at', 'asc')
-                                                    ->get();
+                ->orderBy('created_at', 'asc')
+                ->get();
 
             foreach ($groupAdvertisement as $GA) {
                 array_push($advertisementId, $GA->advertisement_id);
             };
 
             $advertisements = Advertisement::whereIn('advertisements.id', $advertisementId)
-                                            ->select(
-                                                'files.name  as file_name',
-                                                'advertisements.id  as id',
-                                                'advertisements.state  as state',
-                                                'advertisements.text  as text',
-                                                'advertisements.title  as title',
-                                                'advertisements.updated_at  as updated_at',
-                                                'advertisements.updated_at_user  as updated_at_user',
-                                                'advertisements.created_at  as created_at',
-                                                'advertisements.created_at_user  as created_at_user',
-                                                'advertisements.upload_id  as upload_id',
-                                            )
-                                            ->leftjoin('files', 'files.id', '=', 'advertisements.upload_id')
-                                            ->orderBy('created_at', 'desc')
-                                            ->get();
+                ->select(
+                    'files.name  as file_name',
+                    'advertisements.id  as id',
+                    'advertisements.state  as state',
+                    'advertisements.text  as text',
+                    'advertisements.title  as title',
+                    'advertisements.updated_at  as updated_at',
+                    'advertisements.updated_at_user  as updated_at_user',
+                    'advertisements.created_at  as created_at',
+                    'advertisements.created_at_user  as created_at_user',
+                    'advertisements.upload_id  as upload_id',
+                )
+                ->leftjoin('files', 'files.id', '=', 'advertisements.upload_id')
+                ->orderBy('created_at', 'desc')
+                ->get();
         }
 
         $userId = Auth::user()->id;
 
         $events = [];
 
-        for ($i=0; $i < count($logins); $i++) { 
+        for ($i = 0; $i < count($logins); $i++) {
             $log = $logins[$i];
             $date_obj = $log->created_at;
 
@@ -113,26 +113,26 @@ class ProfileController extends Controller
             };
         };
 
-        return view('profile', compact('user','events','advertisements','group','campaigns','modules','company'));
+        return view('profile', compact('user', 'events', 'advertisements', 'group', 'campaigns', 'modules', 'company'));
     }
 
     public function modules()
     {
         $userId = Auth::user()->id;
         $userGroup = UserGroup::where('user_id', $userId)
-                                ->first();
+            ->first();
 
         $result = [];
 
         if ($userGroup) {
             $group = Group::where('id', $userGroup->group_id)
-                            ->first();
+                ->first();
             $modulesGroup = ModuleInGroup::where('group_id', $group->id)
-                                        ->get();
+                ->get();
             $sectionsGroup = SectionInGroup::where('group_id', $group->id)
-                                            ->get();
+                ->get();
             $subSectionsGroup = SubSectionInGroup::where('group_id', $group->id)
-                                                ->get();
+                ->get();
 
             $modulesIds = [];
             foreach ($modulesGroup as $moduleGroup) {
@@ -150,44 +150,43 @@ class ProfileController extends Controller
             };
 
             $modules = Module::whereIn('id', $modulesIds)
-                            ->get();
+                ->get();
             $sections = Section::whereIn('id', $sectionsIds)
-                                ->orderBy('order','asc')
-                                ->get();
-           /*
+                ->orderBy('order', 'asc')
+                ->get();
+            /*
         $subSections = SubSection::whereIn('id', $subSectionsIds)
             ->get();
             */
             $user = Auth::user();
-        if ($user->user_id == 44) {
-            $subSections = SubSection::whereIn('id', $subSectionsIds)
-                ->where(function ($query) {
-                    $query->where('section_id', '!=', 5)
-                        ->orWhere(function ($q) {
-                            $q->where('section_id', 5)
-                                ->where('created_at_user', Auth::user()->name);
-                        });
-                })
-                ->get();
-        } else {
+            if ($user->user_id == 44) {
+                $subSections = SubSection::whereIn('id', $subSectionsIds)
+                    ->where(function ($query) {
+                        $query->where('section_id', '!=', 5)
+                            ->orWhere(function ($q) {
+                                $q->where('section_id', 5)
+                                    ->where('created_at_user', Auth::user()->name);
+                            });
+                    })
+                    ->get();
+            } else {
 
-            $admin = User::where('id', Auth::user()->user_id)->first();
+                $admin = User::where('id', Auth::user()->user_id)->first();
 
-            $subSections = SubSection::whereIn('id', $subSectionsIds)
-                ->where(function ($query) use ($admin) {
-                    $query->where('section_id', '!=', 5)
-                        ->orWhere(function ($q) use ($admin) {
-                            $q->where('section_id', 5)
-                                ->where('created_at_user', $admin->name);
-                        });
-                })
-                ->get();
-        }
+                $subSections = SubSection::whereIn('id', $subSectionsIds)
+                    ->where(function ($query) use ($admin) {
+                        $query->where('section_id', '!=', 5)
+                            ->orWhere(function ($q) use ($admin) {
+                                $q->where('section_id', 5)
+                                    ->where('created_at_user', $admin->name);
+                            });
+                    })
+                    ->get();
+            }
 
             $result = $modules->map(function ($module) use ($sections, $subSections) {
 
-                $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections)
-                {
+                $moduleSections = $sections->sortBy('order')->where('module_id', $module->id)->map(function ($section) use ($subSections) {
                     $sectionSubSections = $subSections->where('section_id', $section->id);
 
                     $section->subSections = $sectionSubSections->values();
@@ -213,20 +212,20 @@ class ProfileController extends Controller
         $userId = Auth::user()->id;
         $user = User::where('id', $userId)->first();
         $logins = Logins::where('user_id', $userId)
-                        ->orderBy('created_at', 'asc')
-                        ->get();
+            ->orderBy('created_at', 'asc')
+            ->get();
         $userGroup = UserGroup::where('user_id', $userId)->first();
         $group = Group::where('id', $userGroup->group_id)->first();
         $groupAdvertisement = GroupAdvertisement::where('group_id', $group->id)
-                                                ->orderBy('created_at', 'asc')
-                                                ->get();
+            ->orderBy('created_at', 'asc')
+            ->get();
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
         $events = [];
         $advertisementId = [];
 
-        for ($i=0; $i < count($logins); $i++) { 
+        for ($i = 0; $i < count($logins); $i++) {
             $log = $logins[$i];
             $date_obj = $log->created_at;
 
@@ -251,21 +250,21 @@ class ProfileController extends Controller
         };
 
         $advertisements = Advertisement::whereIn('advertisements.id', $advertisementId)
-                                        ->select(
-                                            'files.name  as file_name',
-                                            'advertisements.id  as id',
-                                            'advertisements.state  as state',
-                                            'advertisements.text  as text',
-                                            'advertisements.title  as title',
-                                            'advertisements.updated_at  as updated_at',
-                                            'advertisements.updated_at_user  as updated_at_user',
-                                            'advertisements.created_at  as created_at',
-                                            'advertisements.created_at_user  as created_at_user',
-                                            'advertisements.upload_id  as upload_id',
-                                        )
-                                        ->leftjoin('files', 'files.id', '=', 'advertisements.upload_id')
-                                        ->orderBy('created_at', 'desc')
-                                        ->get();
+            ->select(
+                'files.name  as file_name',
+                'advertisements.id  as id',
+                'advertisements.state  as state',
+                'advertisements.text  as text',
+                'advertisements.title  as title',
+                'advertisements.updated_at  as updated_at',
+                'advertisements.updated_at_user  as updated_at_user',
+                'advertisements.created_at  as created_at',
+                'advertisements.created_at_user  as created_at_user',
+                'advertisements.upload_id  as upload_id',
+            )
+            ->leftjoin('files', 'files.id', '=', 'advertisements.upload_id')
+            ->orderBy('created_at', 'desc')
+            ->get();
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
@@ -305,11 +304,13 @@ class ProfileController extends Controller
 
         $uniqueFileName = $fileName . '_' . time() . '.' . $fileExtension;
 
-        $path = $file->storeAs('public/uploads', $uniqueFileName);
+        $destination = public_path('assets/photos');
+
+        $file->move($destination, $uniqueFileName);
 
         $file = new File();
         $file->name = $uniqueFileName;
-        $file->path = $path;
+        $file->path =   'assets/photos/' . $uniqueFileName;
         $file->created_at_user = Auth::user()->name;
         $file->save();
 

@@ -262,7 +262,7 @@
 
                     @if (Auth::user()->foto_perfil)
                         <img class="rounded-circle header-profile-user"
-                            src="{{ url('/storage/uploads', Auth::user()->foto_perfil) }}" alt="{{ $user->name }}">
+                            src="{{ URL::asset('assets/photos/'. Auth::user()->foto_perfil) }}" alt="{{ $user->name }}">
                     @endif
                     <spans class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">
                         {{ Str::ucfirst(Auth::user()->name) }}</span>

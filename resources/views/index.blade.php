@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col-md-12">
         <div style="width: 50%; height: auto; margin-left: auto; margin-right: auto;">
-            <img src="{{ url('/storage/uploads', $company->logo) }}" alt="logo" style="width: 100%; height: auto; margin-left: auto; margin-right: auto;">
+            <img src="{{ URL::asset('assets/photos/'. $company->logo) }}" alt="logo" style="width: 100%; height: auto; margin-left: auto; margin-right: auto;">
         </div>
     </div>
     {{-- @foreach ($modules as $module)

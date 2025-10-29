@@ -376,14 +376,15 @@ class FieldsController extends Controller
             $field->updated_at_user = Auth::user()->name;
         } else {
             $field = new Field();
-            $field->campain_id = $campain_id;
-            $field->block_id = $block_id;
-            $field->type_field_id = $type_field_id;
-            $field->width_id = $width_id;
-            $field->state = $state;
             $field->created_at_user = Auth::user()->name;
             $msg = 'Registro creado exitosamente';
         }
+
+        $field->campain_id = $campain_id;
+        $field->block_id = $block_id;
+        $field->type_field_id = $type_field_id;
+        $field->width_id = $width_id;
+        $field->state = $state;
 
         $field->name = $name;
         $field->options = $options;

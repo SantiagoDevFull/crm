@@ -28,7 +28,7 @@
                     <div class="clearfix"></div>
                     <div id="image-profile-button" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target=".image-profile">
                         @if ($user->foto_perfil)
-                            <img src="{{ url('/storage/uploads', $user->foto_perfil) }}" alt="{{ $user->name }}" class="avatar-lg rounded-circle img-thumbnail">
+                            <img src="{{ URL::asset('assets/photos/'.$user->foto_perfil) }}" alt="{{ $user->name }}" class="avatar-lg rounded-circle img-thumbnail">
                         @else
                             <div class="avatar-lg mx-auto mb-4">
                                 <div class="avatar-title bg-primary-subtle rounded-circle text-primary">
