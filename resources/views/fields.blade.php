@@ -127,6 +127,12 @@
                     <textarea class="form-control" id="options" name="options"></textarea>
                 </div>
             </div>
+            <div class="col-md-6" id="range-section" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label" for="options">Rango:</label>
+                    <input type="number" class="form-control" id="range" name="range">
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -286,8 +292,15 @@
             $('#in_notifications').prop("checked", 0);
             $('#in_general_search').prop("checked", 0);
             $('#has_edit').prop("checked", 0);
+
+            $('#options-section').css('display','none');
+            $('#range-section').css('display','none');
+
+            $('#options-section').val("");
+            $('#range-section').val("");
         };
         function loadData(ID) {
+        
             $('#editField').removeClass('was-validated');
             $('#editField').addClass('needs-validated');
             let fieldData;
@@ -319,7 +332,11 @@
                     in_notifications,
                     in_general_search,
                     has_edit,
+                    options,
+                    range
                 } = fieldData;
+
+                //alert(JSON.stringify(fieldData));
 
                 const fieldEditIds = fieldEdit.map(i => i.group_id);
                 const fieldViewIds = fieldView.map(i => i.group_id);
@@ -332,6 +349,8 @@
                 $('#block_id').val(block_id);
                 $('#type_field_id').val(type_field_id);
                 $('#width_id').val(width_col);
+                $('#options').val(options);
+                $('#range').val(range);
 
                 $('#tab_states').val(tabStateIds).trigger('change');
                 $('#edits').val(fieldEditIds).trigger('change');
@@ -345,6 +364,19 @@
                 $('#in_notifications').prop("checked", in_notifications);
                 $('#in_general_search').prop("checked", in_general_search);
                 $('#has_edit').prop("checked", has_edit);
+
+
+                if (type_field_id == "3" || type_field_id == "4") {
+                    $('#options-section').css('display','flex');
+                } else {
+                    $('#options-section').css('display','none');
+                };
+
+                if (type_field_id == "7") {
+                    $('#range-section').css('display','flex');
+                } else {
+                    $('#range-section').css('display','none');
+                };
             };
         };
 
@@ -372,6 +404,14 @@
                     $('#options-section').css('display','flex');
                 } else {
                     $('#options-section').css('display','none');
+                    $('#options').val('');
+                };
+
+                if (val == "7") {
+                    $('#range-section').css('display','flex');
+                } else {
+                    $('#range-section').css('display','none');
+                    $('#range').val('');
                 };
             });
 

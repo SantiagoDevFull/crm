@@ -67,16 +67,36 @@
                     @foreach ($fields[$block->id] as $f)
                         <div class="col-md-{{ $f['width_col'] }}">
                             <div class="mb-3">
-                                <label class="form-label" for="{{ $f['id'] }}">{{ $f['name'] }}:</label>
+
+                                @error('field_'.$f['id'])
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                            <li>{{ $message }}</li>
+                                    </ul>
+                                </div>
+                                @enderror
+                                
+                                @php
+                                $readonly = $f['can_edit'] == 0 ? 'readonly' : '';
+                                $hidden = $f['can_view'] == 0 ? 'hidden' : '';
+                                $unique = $f['unique'] == 1 ? 'Unico' : '';
+                                @endphp
+
+                                
+                                @if($unique === 'Unico') 
+                                    <p class="badge bg-danger">Este campo es único</p><br>
+                                @endif
+                                <label {{ $hidden }} class="form-label" for="{{ $f['id'] }}">{{ $f['name'] }}:</label>
+                                
                                 @if ($f['type_field_id'] == 1)
                                     <input type="text" class="form-control" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 2)
                                     <input type="text" class="form-control" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 3)
                                     <select class="form-select" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                         @if (!empty($f['options']))
                                             @foreach (explode("\r\n", $f['options']) as $opt)
                                                 <option value="{{ $opt }}">{{ $opt }}</option>
@@ -86,7 +106,7 @@
                                 @elseif($f['type_field_id'] == 4)
                                     <select class="select2 form-control select2-multiple" id="{{ $f['id'] }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}][]" multiple="multiple"
-                                        data-placeholder="Selecciona">
+                                        data-placeholder="Selecciona" {{ $readonly }} {{ $hidden }}>
                                         @if (!empty($f['options']))
                                             @foreach (explode("\r\n", $f['options']) as $opt)
                                                 <option value="{{ $opt }}">{{ $opt }}</option>
@@ -95,16 +115,27 @@
                                     </select>
                                 @elseif($f['type_field_id'] == 5)
                                     <input class="form-control" type="date" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 6)
                                     <input class="form-control" type="datetime-local" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 7)
-                                    <input class="form-control" type="number" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+
+                                    @php
+                                    $range = $f['range']?? 8;
+                                    @endphp
+                                    <input 
+                                        class="form-control" 
+                                        type="number" 
+                                        id="{{ $f['id'] }}" 
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" 
+                                        {{ $readonly }} 
+                                        {{ $hidden }}
+                                        oninput="if(this.value.length > {{ $range }}) this.value = this.value.slice(0, {{ $range }});">
+                                        
                                 @elseif($f['type_field_id'] == 8)
                                     <input type="checkbox" switch="bool" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]" />
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }} />
                                     <label for="{{ $f['id'] }}" class="mb-0" data-on-label="On"
                                         data-off-label="Off"></label>
                                     {{-- <div class="form-check form-switch form-switch-md">
@@ -112,10 +143,10 @@
                                 </div> --}}
                                 @elseif($f['type_field_id'] == 9)
                                     <input class="form-control" type="file" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 10)
                                     <input class="form-control" type="file" multiple id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]">
+                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @endif
                             </div>
                         </div>

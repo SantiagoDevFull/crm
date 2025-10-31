@@ -185,6 +185,7 @@
                 });
 
                 $('.datatable tbody').on('click', '.btn.edit', function() {
+                    
                     const tabId = this.dataset.tabId;
                     const formId = this.dataset.formId;
 

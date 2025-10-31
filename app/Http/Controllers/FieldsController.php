@@ -160,6 +160,15 @@ class FieldsController extends Controller
                 'fields.name as name',
                 'fields.order as order',
                 'fields.state as state',
+                'fields.unique as unique',
+                'fields.required as required',
+                'fields.bloq_mayus as bloq_mayus',
+                'fields.in_solds_list as in_solds_list',
+                'fields.in_notifications as in_notifications',
+                'fields.in_general_search as in_general_search',
+                'fields.has_edit as has_edit',
+                'fields.options as options',
+                'fields.range as range'
             )
             ->where('fields.campain_id', $id)
             ->orderBy('fields.order', 'asc')
@@ -305,6 +314,7 @@ class FieldsController extends Controller
                 'fields.name as name',
                 'fields.order as order',
                 'fields.state as state',
+                'fields.range as range',
             )
             ->where('fields.campain_id', $campain_id)
             ->orderBy('fields.order', 'asc')
@@ -356,9 +366,11 @@ class FieldsController extends Controller
         $width_id = request('width_id');
         $name = request('name');
         $options = request('options');
+        $range = request('range');
         $order = request('order');
         $unique = request('unique');
         $required = request('required');
+        Log::info($required);
         $bloq_mayus = request('bloq_mayus');
         $in_solds_list = request('in_solds_list');
         $in_notifications = request('in_notifications');
@@ -388,6 +400,7 @@ class FieldsController extends Controller
 
         $field->name = $name;
         $field->options = $options;
+        $field->range = $range;
         $field->order = $order;
         $field->unique = 0;
         if ($unique) $field->unique = 1;
@@ -482,6 +495,7 @@ class FieldsController extends Controller
                 'fields.name as name',
                 'fields.order as order',
                 'fields.state as state',
+                'fields.range as range',
             )
             ->where('fields.campain_id', $id)
             ->orderBy('fields.order', 'asc')

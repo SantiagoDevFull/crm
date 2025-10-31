@@ -57,7 +57,7 @@
                     </td>
                     <td data-field="color">
                         <div data-state-id="{{ $state->id }}">
-                            {{ $state->color }}
+                            <div style="width: 30px; height: 30px; background-color: {{ $state->color }}; border: 1px solid #ccc; border-radius: 40px;"></div>
                         </div>
                     </td>
                     <td data-field="resaltar en notificaciones">

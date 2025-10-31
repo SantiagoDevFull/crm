@@ -43,8 +43,9 @@ class CompanyController extends Controller
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
 
-        $userGroups = UserGroup::leftJoin('groups', 'user_groups.group_id', '=', 'groups.id')
-            ->leftJoin('users', 'users.id', '=', 'user_groups.user_id')
+        
+        $userGroups = UserGroup::join('groups', 'user_groups.group_id', '=', 'groups.id')
+            ->join('users', 'users.id', '=', 'user_groups.user_id')
             ->select(
                 'user_groups.id as user_group_id',
                 'users.name as user_name',
@@ -57,7 +58,6 @@ class CompanyController extends Controller
             })
             ->distinct()
             ->get();
-
 
         return view('company', compact('companies', 'user', 'modules', 'userGroups'));
     }

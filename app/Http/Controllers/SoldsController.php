@@ -307,9 +307,10 @@ class SoldsController extends Controller
                 //->whereIn('states_states.from_state_id', $newStatesIds)
                 ->get();
         } else {
-            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
+
+            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.from_state_id')
                 ->select(
-                    'states_states.to_state_id as id',
+                    'states_states.from_state_id as id',
                     'states.name as name'
                 )
                 ->whereIn('from_state_id', $newStatesIds)
@@ -317,17 +318,34 @@ class SoldsController extends Controller
                 ->get();
         }
 
+
+        $grupos = UserGroup::where('user_id', $userId)->pluck('group_id');
+
         $fields = Field::where('fields.campain_id', $id)
             ->whereIn('fields.id', $field_ids)
-            ->leftjoin('blocks', 'blocks.id', '=', 'fields.block_id')
-            ->leftjoin('widths', 'widths.id', '=', 'fields.width_id')
+            ->leftJoin('blocks', 'blocks.id', '=', 'fields.block_id')
+            ->leftJoin('widths', 'widths.id', '=', 'fields.width_id')
+            ->leftJoin('groups_fields_edit', function ($join) use ($grupos) {
+                $join->on('groups_fields_edit.field_id', '=', 'fields.id')
+                    ->whereIn('groups_fields_edit.group_id', $grupos)
+                    ->whereNull('groups_fields_edit.deleted_at');
+            })
+            ->leftJoin('groups_fields_view', function ($join) use ($grupos) {
+                $join->on('groups_fields_view.field_id', '=', 'fields.id')
+                    ->whereIn('groups_fields_view.group_id', $grupos)
+                    ->whereNull('groups_fields_view.deleted_at');
+            })
             ->select(
-                'fields.id as id',
-                'fields.name as name',
-                'fields.block_id as block_id',
-                'fields.type_field_id as type_field_id',
-                'fields.options as options',
+                'fields.id',
+                'fields.name',
+                'fields.block_id',
+                'fields.type_field_id',
+                'fields.options',
                 'widths.col as width_col',
+                'fields.range as range',
+                'fields.unique',
+                DB::raw("CASE WHEN groups_fields_edit.group_id IN (" . $grupos->implode(',') . ") THEN 1 ELSE 1 END as can_edit"),
+                DB::raw("CASE WHEN groups_fields_view.group_id IN (" . $grupos->implode(',') . ") THEN 1 ELSE 1 END as can_view")
             )
             ->orderBy('fields.order', 'asc')
             ->get();
@@ -389,9 +407,9 @@ class SoldsController extends Controller
                 //->whereIn('states_states.from_state_id', $newStatesIds)
                 ->get();
         } else {
-            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
+            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.from_state_id')
                 ->select(
-                    'states_states.to_state_id as id',
+                    'states_states.from_state_id as id',
                     'states.name as name'
                 )
                 ->whereIn('from_state_id', $newStatesIds)
@@ -399,21 +417,37 @@ class SoldsController extends Controller
                 ->get();
         }
 
+        $grupos = UserGroup::where('user_id', $userId)->pluck('group_id');
 
         $fields = Field::where('fields.campain_id', $id)
             ->whereIn('fields.id', $field_ids)
-            ->leftjoin('blocks', 'blocks.id', '=', 'fields.block_id')
-            ->leftjoin('widths', 'widths.id', '=', 'fields.width_id')
+            ->leftJoin('blocks', 'blocks.id', '=', 'fields.block_id')
+            ->leftJoin('widths', 'widths.id', '=', 'fields.width_id')
+            ->leftJoin('groups_fields_edit', function ($join) use ($grupos) {
+                $join->on('groups_fields_edit.field_id', '=', 'fields.id')
+                    ->whereIn('groups_fields_edit.group_id', $grupos)
+                    ->whereNull('groups_fields_edit.deleted_at');
+            })
+            ->leftJoin('groups_fields_view', function ($join) use ($grupos) {
+                $join->on('groups_fields_view.field_id', '=', 'fields.id')
+                    ->whereIn('groups_fields_view.group_id', $grupos)
+                    ->whereNull('groups_fields_view.deleted_at');
+            })
             ->select(
-                'fields.id as id',
-                'fields.name as name',
-                'fields.block_id as block_id',
-                'fields.type_field_id as type_field_id',
-                'fields.options as options',
+                'fields.id',
+                'fields.name',
+                'fields.block_id',
+                'fields.type_field_id',
+                'fields.options',
                 'widths.col as width_col',
+                'fields.unique as unique',
+                DB::raw("CASE WHEN groups_fields_edit.group_id IN (" . $grupos->implode(',') . ") THEN 1 ELSE 0 END as can_edit"),
+                DB::raw("CASE WHEN groups_fields_view.group_id IN (" . $grupos->implode(',') . ") THEN 1 ELSE 0 END as can_view")
             )
             ->orderBy('fields.order', 'asc')
             ->get();
+
+
         $fields = $fields->groupBy('block_id');
         $fields = $fields->toArray();
 
@@ -437,8 +471,7 @@ class SoldsController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
-        echo $states;
-       return view('forms', compact('id', 'form_id', 'campaigns', 'tab_state_id', 'campaign', 'fields', 'blocks', 'states', 'form', 'modules', 'user', 'company'));
+        return view('forms', compact('id', 'form_id', 'campaigns', 'tab_state_id', 'campaign', 'fields', 'blocks', 'states', 'form', 'modules', 'user', 'company'));
     }
 
     public function modules()
@@ -535,21 +568,38 @@ class SoldsController extends Controller
         $data = request()->all();
         $state = 1;
 
-        unset($data['_token']);
-        unset($data['id']);
-        unset($data['campaign_id']);
-        unset($data['tab_state_id']);
-        unset($data['state_id']);
+        unset($data['_token'], $data['id'], $data['campaign_id'], $data['tab_state_id'], $data['state_id']);
 
-        $tab_state_id = State::findOrFail($state_id);;
+        $tab_state_id = State::findOrFail($state_id);
+
+        foreach ($data as $block_id => $fields) {
+            foreach ($fields as $field_id => $value) {
+                $field = Field::find($field_id);
+
+                if ($field && $field->unique == 1) {
+
+                    $exists = Form::where('campain_id', $campain_id)
+                        ->where(function ($q) use ($field_id, $value) {
+                            $q->whereRaw("JSON_EXTRACT(data, '$.\"$field_id\"') = ?", [$value])
+                                ->orWhereRaw("data LIKE ?", ['%"' . $field_id . '":"' . $value . '"%']);
+                        })
+                        ->exists();
+
+                    if ($exists) {
+                        return back()->withErrors([
+                            "field_$field_id" => "El valor '{$value}' ya existe en esta campaña para el campo '{$field->name}'."
+                        ])->withInput();
+                    }
+                }
+            }
+        }
 
         foreach ($data as $key => $val) {
             foreach ($val as $k => $v) {
                 if ($v instanceof UploadedFile) {
                     $file = $v;
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $fileExtension = $file->getClientOriginalExtension();
-
+                    $fileExtension = strtolower($file->getClientOriginalExtension());
                     $uniqueFileName = $fileName . '_' . time() . '.' . $fileExtension;
 
                     $path = $file->storeAs('public/uploads', $uniqueFileName);
@@ -561,14 +611,15 @@ class SoldsController extends Controller
                     $file->save();
 
                     $data[$key][$k] = $file->id;
-                };
-            };
-        };
+                }
+            }
+        }
 
         $jsonData = json_encode($data);
 
-        if (isset($id) && $id > 0) {
-            $form =  Form::findOrFail($id);
+        // 🔹 Guardar o actualizar
+        if (!empty($id)) {
+            $form = Form::findOrFail($id);
             $form->updated_at_user = Auth::user()->name;
         } else {
             $form = new Form();
@@ -580,73 +631,54 @@ class SoldsController extends Controller
         $form->tab_state_id = $tab_state_id->tab_state_id;
         $form->state_id = $state_id;
         $form->data = $jsonData;
-
         $form->save();
 
+        // 🔹 Redirección (igual que tu código original)
         $campaigns = Campain::whereNull('deleted_at')->get();
         $campaign = Campain::findOrFail($campain_id);
         $tab_states = TabState::where('campain_id', $campain_id)
             ->orderBy('tab_states.order', 'asc')
             ->get();
 
-        $tab_state_id = 0;
-        $tab_state_ids = [];
-
-        if (!$tab_states->isEmpty()) {
-            $tab_state_id = $tab_states[0]->id;
-        };
-        for ($i = 0; $i < count($tab_states); $i++) {
-            $ts = $tab_states[$i];
-
-            array_push($tab_state_ids, $ts->id);
-        };
+        $tab_state_id = $tab_states->first()->id ?? 0;
+        $tab_state_ids = $tab_states->pluck('id')->toArray();
 
         $states = State::whereIn('tab_state_id', $tab_state_ids)
             ->orderBy('states.order', 'asc')
             ->get();
 
         $tab_states_fields = TabStateField::get();
-        $field_ids = [];
-        foreach ($tab_states_fields as $tab_state_field) {
-            $field_ids[] = $tab_state_field->field_id;
-        }
+        $field_ids = $tab_states_fields->pluck('field_id');
 
         $forms = Form::where('forms.campain_id', $campain_id)
-            ->leftjoin('campains', 'campains.id', '=', 'forms.campain_id')
-            ->leftjoin('states', 'states.id', '=', 'forms.state_id')
+            ->leftJoin('campains', 'campains.id', '=', 'forms.campain_id')
+            ->leftJoin('states', 'states.id', '=', 'forms.state_id')
             ->select(
-                'forms.id as id',
+                'forms.id',
                 'campains.name as campain_name',
                 'states.name as state_name',
-                'forms.campain_id as campain_id',
-                'forms.tab_state_id as tab_state_id',
-                'forms.data as data',
-                'forms.created_at_user as created_at_user',
-                'forms.created_at as created_at',
-                'forms.updated_at as updated_at',
-                'forms.state as state',
+                'forms.campain_id',
+                'forms.tab_state_id',
+                'forms.data',
+                'forms.created_at_user',
+                'forms.created_at',
+                'forms.updated_at',
+                'forms.state'
             )
-            ->orderBy('forms.id', 'desc')
-            ->get();
-        $forms = $forms->groupBy('tab_state_id');
-        $forms = $forms->toArray();
+            ->orderByDesc('forms.id')
+            ->get()
+            ->groupBy('tab_state_id')
+            ->toArray();
 
         $fields = Field::where('fields.campain_id', $campain_id)
             ->whereIn('fields.id', $field_ids)
             ->where('fields.in_solds_list', 1)
-            ->select(
-                'fields.id as id',
-                'fields.name as name',
-                'fields.block_id as block_id',
-                'fields.type_field_id as type_field_id',
-            )
+            ->select('fields.id', 'fields.name', 'fields.block_id', 'fields.type_field_id')
             ->orderBy('fields.order', 'asc')
             ->get();
 
-        $url = '/sales/solds';
-        $url .= '/' . $campain_id;
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
+        $url = '/sales/solds/' . $campain_id;
+        $user = Auth::user();
         $company = Company::findOrFail(1);
         $modules = $this->modules();
 

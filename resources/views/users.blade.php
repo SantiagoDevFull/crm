@@ -52,15 +52,15 @@
                     </div>
                 </td>
                 <td style="width: 100px">
-                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit"
+                    <button type="button" class="btn btn-outline-info btn-sm edit" title="Editar"
                         data-user-id="{{ $user->id }}" data-bs-toggle="modal" data-bs-target="#editUser">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Delete"
+                    <button type="button" class="btn btn-outline-danger btn-sm delete" title="Eliminar"
                         data-user-id="{{ $user->id }}">
                         <i class="fas uil-trash-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-success btn-sm add-group" title="Delete"
+                    <button type="button" class="btn btn-outline-success btn-sm add-group" title="Asignar Grupos"
                         data-user-id="{{ $user->id }}">
                         <i class="fas uil-users-alt"></i>
                     </button>
