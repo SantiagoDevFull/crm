@@ -55,8 +55,8 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>FECHA DE CREACIÓN</th>
-                                                <th>FECHA DE EDICIÓN</th>
+                                                <th>DNI</th>
+                                                <th>CLIENTE</th>
                                                 <th>AGENTE</th>
                                                 <th>ESTADO</th>
                                                 <th>OPCIONES</th>

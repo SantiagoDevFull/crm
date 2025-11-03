@@ -35,22 +35,22 @@
         ]">
             @foreach ($states as $state)
                 <tr data-id="{{ $state->id }}">
-                    <td data-field="campaña">
+                    <td data-field="campaña" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->campaign_name }}
                         </div>
                     </td>
-                    <td data-field="nombre">
+                    <td data-field="nombre" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->name }}
                         </div>
                     </td>
-                    <td data-field="pestaña">
+                    <td data-field="pestaña" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->tab_state_name }}
                         </div>
                     </td>
-                    <td data-field="orden">
+                    <td data-field="orden" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->order }}
                         </div>
@@ -60,29 +60,29 @@
                             <div style="width: 30px; height: 30px; background-color: {{ $state->color }}; border: 1px solid #ccc; border-radius: 40px;"></div>
                         </div>
                     </td>
-                    <td data-field="resaltar en notificaciones">
+                    <td data-field="resaltar en notificaciones" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->not }}
                         </div>
                     </td>
-                    <td data-field="estado es agendado">
+                    <td data-field="estado es agendado" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->age }}
                         </div>
                     </td>
-                    <td data-field="estado es comisionable">
+                    <td data-field="estado es comisionable" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             {{ $state->com }}
                         </div>
                     </td>
-                    <td data-field="estado">
+                    <td data-field="estado" style="background-color: {{ $state->color }}">
                         <div data-state-id="{{ $state->id }}">
                             <input type="checkbox" id="switch-{{ $state->id }}" switch="bool"
                                 {{ $state->state == '1' ? 'checked' : '' }} />
                             <label for="switch-{{ $state->id }}" data-on-label="On" data-off-label="Off"></label>
                         </div>
                     </td>
-                    <td style="width: 100px" data-field="opciones">
+                    <td style="width: 100px" data-field="opciones" style="background-color: {{ $state->color }}">
                         <button type="button" class="btn btn-outline-info btn-sm edit" title="Edit"
                             data-state-id="{{ $state->id }}" data-bs-toggle="modal" data-bs-target="#editState">
                             <i class="fas fa-pencil-alt"></i>
