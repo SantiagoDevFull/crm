@@ -278,8 +278,8 @@ class SoldsController extends Controller
         $state = State::where('tab_state_id', $tab_state_id)
             ->orderBy('states.order', 'asc')
             ->get();
-        $stateIds = $state->pluck('id')->toArray();
 
+        $stateIds = $state->pluck('id')->toArray();
 
         $userId = Auth::user()->id;
         $grupos_users = UserGroup::leftjoin('groups', 'groups.id', '=', 'user_groups.group_id')
@@ -298,16 +298,32 @@ class SoldsController extends Controller
         $isAdmin = UserGroup::where('user_id', $userId)->where('group_id', 14)->first();
 
         if ($isAdmin) {
-            $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.to_state_id')
-                ->select(
-                    'states_states.to_state_id as id',
-                    'states.name as name'
-                )
-                ->whereIn('from_state_id', $stateIds)
-                //->whereIn('states_states.from_state_id', $newStatesIds)
-                ->get();
-        } else {
 
+            /*
+            $states = StateState::leftJoin('states', 'states.id', '=', 'states_states.to_state_id')
+            ->leftJoin('tab_states', 'tab_states.id', '=', 'states.tab_state_id')
+            ->leftJoin('campains', 'campains.id', '=', 'tab_states.campain_id')
+            ->select(
+                'states_states.id as id',
+                'states.name as name'
+            )
+            ->where('tab_states.campain_id', $id)
+            ->orderBy('states.order', 'asc')
+            ->get();
+            */
+            $states = State::leftjoin('tab_states', 'tab_states.id', '=', 'states.tab_state_id')
+            ->leftjoin('campains', 'campains.id', '=', 'tab_states.campain_id')
+            ->leftjoin('states_states', 'states_states.from_state_id', '=', 'states.id')
+            ->select(
+                'states_states.from_state_id as id',
+                'states.name as name',
+            )
+            ->where('tab_states.campain_id', $id)
+            ->groupBy('states_states.from_state_id', 'states.name')
+            ->orderBy('states.order', 'asc')
+            ->get();
+                
+        } else {
             $states = StateState::leftjoin('states', 'states.id', '=', 'states_states.from_state_id')
                 ->select(
                     'states_states.from_state_id as id',
@@ -316,6 +332,7 @@ class SoldsController extends Controller
                 ->whereIn('from_state_id', $newStatesIds)
                 //->whereIn('states_states.from_state_id', $newStatesIds)
                 ->get();
+                echo "sdfd";
         }
 
 

@@ -55,8 +55,8 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>DNI</th>
-                                                <th>CLIENTE</th>
+                                                <th>Cliente</th>
+                                                <th>N° Documento</th>
                                                 <th>AGENTE</th>
                                                 <th>ESTADO</th>
                                                 <th>OPCIONES</th>
@@ -72,13 +72,39 @@
                                                 @php
                                                     $state_name = collect($states)->firstWhere('id', $d['state_id']);
                                                     $row_color = $state_name['color'] ?? 'transparent';
+
+                                                    $decodedData = json_decode($d['data'], true);
+
+                                                    $values = collect($decodedData)
+                                                        ->flatMap(fn($item) => is_array($item) ? $item : [$item]);
+
+                                                    $nombre = $values
+                                                        ->filter(function ($v) {
+                                                            if (empty($v)) return false;
+                                                            if (!preg_match('/[a-zA-ZÁÉÍÓÚáéíóúÑñ]/u', $v)) return false; 
+                                                            if (filter_var($v, FILTER_VALIDATE_EMAIL)) return false;       
+                                                            if (preg_match('/^\d+$/', $v)) return false;                   
+                                                            if (preg_match('/^\d{7,}$/', $v)) return false;               
+                                                            return true;
+                                                        })
+                                                        ->sortByDesc(fn($v) => str_word_count($v)) 
+                                                        ->first() ?? '—';
+                                                        
+                                                    $documento = $values
+                                                        ->filter(function ($v) {
+                                                            if (empty($v)) return false;
+                                                            if (!preg_match('/^\d+$/', $v)) return false;
+                                                            $len = strlen($v);
+                                                            return $len >= 7 && $len <= 11;
+                                                        })
+                                                        ->first() ?? '—';
                                                 @endphp
                                                 <tr data-id="{{ $d['id'] }}"
                                                     style="background-color: {{ $row_color }}">
                                                     <td>{{ $d['id'] }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($d['created_at'])->format('d/m/Y H:i') }}
+                                                    <td>{{ $nombre   }}</td>
                                                     </td>
-                                                    <td>{{ \Carbon\Carbon::parse($d['updated_at'])->format('d/m/Y H:i') }}
+                                                    <td>{{ $documento   }}
                                                     </td>
                                                     <td>{{ $d['created_at_user'] }}</td>
                                                     <td>{{ $state_name['name'] ?? '' }}</td>
