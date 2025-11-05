@@ -296,6 +296,7 @@
             $('#autorize_duplicate_sold').val([]).trigger('change');
         };
         function loadData(ID) {
+       
             $('#editCampaign').removeClass('was-validated');
             $('#editCampaign').addClass('needs-validated');
             let campaignData;

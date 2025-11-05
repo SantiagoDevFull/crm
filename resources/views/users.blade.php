@@ -71,7 +71,7 @@
 
     <x-modal :idModal="'editUser'" :ariaLabelledby="'editUser'" :routeAction="route('SaveUser')" :idTitle="'editUserTitle'" :textTitle="'Crear Usuario'">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="mb-3">
                     <label class="form-label" for="name">Nombre Completo:</label>
                     <input type="text" class="form-control" id="name" name="name" required>
@@ -79,7 +79,7 @@
                     <div class="invalid-feedback">El nombre es requerido.</div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="mb-3">
                     <label class="form-label" for="email">Email:</label>
                     <div class="input-group">

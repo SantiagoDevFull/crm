@@ -65,7 +65,8 @@ class CampaignsController extends Controller
             'campains.name as name',
             'campains.description as description',
             'campains.state as state',
-            'campains.geolocation as geolocation'
+            'campains.geolocation as geolocation',
+            'campains.country_id as country_id'
         )
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
