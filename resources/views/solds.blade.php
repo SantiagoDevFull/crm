@@ -54,9 +54,9 @@
                                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th>ID</th>
+                                                
                                                 <th>Cliente</th>
-                                                <th>N° Documento</th>
+                                                <th>CIF/NIF</th>
                                                 <th>AGENTE</th>
                                                 <th>ESTADO</th>
                                                 <th>OPCIONES</th>
@@ -101,7 +101,7 @@
                                                 @endphp
                                                 <tr data-id="{{ $d['id'] }}"
                                                     style="background-color: {{ $row_color }}">
-                                                    <td>{{ $d['id'] }}</td>
+                                                    
                                                     <td>{{ $nombre   }}</td>
                                                     </td>
                                                     <td>{{ $documento   }}

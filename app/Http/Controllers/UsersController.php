@@ -12,6 +12,7 @@ use App\Models\Logins;
 use App\Models\Horario;
 use App\Models\Day;
 use App\Models\Campain;
+use App\Models\Form;
 use App\Models\ModuleInGroup;
 use App\Models\Module;
 use App\Models\SectionInGroup;
@@ -369,6 +370,14 @@ class UsersController extends Controller
 
         if (isset($id)) {
             $element = User::findOrFail($id);
+
+            $elements_forms = Form::where('created_at_user', $element->name)->get();
+
+            foreach ($elements_forms as $element_form) {
+                $element_form->created_at_user =$name;
+                $element_form->update();
+            }
+
 
             $Variable = $element->email;
             $pos = strpos($Variable, '@');

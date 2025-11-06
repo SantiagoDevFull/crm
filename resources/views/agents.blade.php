@@ -17,17 +17,18 @@
     <x-select-section :idForm="'form_campaign'" :idSelect="'id_campaign'" :nameLabel="'Seleccionar Campaña'" :options="$campaigns"></x-select-section>
 
     @if ($id)
-        <x-table :idCreateButton="'newEditAgent'" :idModal="'editAgent'" :textButton="'Crear Agente'" :headers="['ID','NOMBRE','CAMPAÑA','ESTADO','OPCIONES']">
+        <x-table :idCreateButton="'newEditAgent'" :idModal="'editAgent'" :textButton="'Crear Agente'" :headers="['SUPERVISOR','AGENTE','CAMPAÑA','ESTADO','OPCIONES']">
             @foreach ($agents as $agent)
                 <tr data-id="{{ $agent->id }}">
-                    <td data-field="id">
+                    
+                    <td data-field="user_sup_name">
                         <div data-agent-id="{{ $agent->id }}">
-                            {{ $agent->user_id }}
+                            {{ $agent->user_sup_name }}
                         </div>
                     </td>
-                    <td data-field="nombre">
+                    <td data-field="user_agent_name">
                         <div data-agent-id="{{ $agent->id }}">
-                            {{ $agent->user_name }}
+                            {{ $agent->user_agent_name }}
                         </div>
                     </td>
                     <td data-field="campaña">

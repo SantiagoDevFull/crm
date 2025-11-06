@@ -89,23 +89,55 @@ class AgentsController extends Controller
             ->where('user_groups.group_id', 14)
             ->where('user_groups.user_id', Auth::user()->id)
             ->get();
-
-        $agents = Agent::leftjoin('users', 'users.id', '=', 'agents.user_id')
+        /*
+            $agents = Agent::leftjoin('users', 'users.id', '=', 'agents.user_id')
             ->leftjoin('campains', 'campains.id', '=', 'agents.camp_id')
+            ->leftjoin('agents_in_sups', 'agents_in_sups.agent_id', '=', 'agents.id')
+            ->leftjoin('sups', 'sups.id', '=', 'agents_in_sups.sup_id')
+            ->leftjoin('users as user_sup', 'user_sup.id', '=', 'sups.user_id')
             ->select(
                 'agents.id as id',
                 'agents.user_id as user_id',
                 'agents.camp_id as camp_id',
-                'agents.state as state',
-                'campains.name as camp_name',
                 'users.name as user_name',
-                'users.email as user_email',
+                'user_sup.name as user_sup_name',
+                'campains.name as camp_name',
+                'agents.state as state',
+                'users.email as user_email'
             )
-            ->where('camp_id', $id)
+            ->where('agents.camp_id', $id)
             ->get();
+            */
+
+        $agents = AgentInSup::rightjoin('agents', 'agents.id', '=', 'agents_in_sups.agent_id')
+            ->join('sups', 'sups.id', '=', 'agents_in_sups.sup_id')
+            ->join('users as user_sup', 'user_sup.id', '=', 'sups.user_id')
+            ->join('users as user_agent', 'user_agent.id', '=', 'agents.user_id')
+            ->join('campains', 'campains.id', '=', 'agents.camp_id')
+            ->select(
+                'agents.id as id',
+                'sups.id as id_sup',
+                'agents_in_sups.id as id_agents_in_sups',
+                'agents.user_id as user_id',
+                'agents.camp_id as camp_id',
+                'user_agent.name as user_agent_name',
+                'user_sup.name as user_sup_name',
+                'campains.name as camp_name',
+                'agents.state as state',
+                'user_agent.email as user_agent_email',
+
+            )
+            ->where('agents.camp_id', $id)
+            ->whereNull('agents.deleted_at')
+            ->get();
+
+        foreach ($agents as $agent) {
+            echo $agent . "<br>";
+        }
+
         $agentsInSups = AgentInSup::get();
         $userId = Auth::user()->id;
-        $users = User::where('user_id', $userId)->get();
+        $users = User::where('user_id', 96)->get();
         $sups = Sup::leftjoin('users', 'users.id', '=', 'sups.user_id')
             ->leftjoin('campains', 'campains.id', '=', 'sups.camp_id')
             ->select(
@@ -164,7 +196,7 @@ class AgentsController extends Controller
         $subSections = SubSection::whereIn('id', $subSectionsIds)
             ->get();
             */
-            $user = Auth::user();
+        $user = Auth::user();
         if ($user->user_id == 44) {
             $subSections = SubSection::whereIn('id', $subSectionsIds)
                 ->where(function ($query) {
@@ -237,34 +269,30 @@ class AgentsController extends Controller
         $user_id = request('user_id');
         $camp_id = request('campaign_id');
 
-        if (isset($id)) {
-            $agent =  Agent::findOrFail($id);
+        if ($id) {
+            $agent = Agent::findOrFail($id);
+            $agent->user_id = $user_id;
+            $agent->camp_id = $camp_id;
+            $agent->updated_at_user = Auth::user()->name;
+            $agent->save();
 
-            AgentInSup::where('agent_id', $id)
-                ->delete();
-
-            $sup = new AgentInSup();
-            $sup->sup_id = $sup_id;
-            $sup->created_at_user = Auth::user()->name;
-            $sup->agent_id = $agent->id;
+            AgentInSup::where('agent_id', $id)->delete();
 
             $msg = 'Registro actualizado exitosamente';
-            $agent->updated_at_user = Auth::user()->name;
         } else {
             $agent = new Agent();
             $agent->user_id = $user_id;
             $agent->camp_id = $camp_id;
             $agent->created_at_user = Auth::user()->name;
-            $msg = 'Registro creado exitosamente';
+            $agent->save();
 
-            $sup = new AgentInSup();
-            $sup->sup_id = $sup_id;
-            $sup->created_at_user = Auth::user()->name;
+            $msg = 'Registro creado exitosamente';
         }
 
-        $agent->save();
-
+        $sup = new AgentInSup();
+        $sup->sup_id = $sup_id;
         $sup->agent_id = $agent->id;
+        $sup->created_at_user = Auth::user()->name;
         $sup->save();
 
         $modules = $this->modules();

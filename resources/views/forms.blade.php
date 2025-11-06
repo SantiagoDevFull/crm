@@ -78,25 +78,31 @@
                                 
                                 @php
                                 $readonly = $f['can_edit'] == 0 ? 'readonly' : '';
+                                $color_readonly = $f['can_edit'] == 0 ? '#e9ecef' : '';
                                 $hidden = $f['can_view'] == 0 ? 'hidden' : '';
                                 $unique = $f['unique'] == 1 ? 'Unico' : '';
                                 @endphp
 
                                 
                                 @if($unique === 'Unico') 
-                                    <p class="badge bg-danger">Este campo es único</p><br>
+                                    <span class="badge bg-danger" {{ $hidden }}>Único</span>
                                 @endif
-                                <label {{ $hidden }} class="form-label" for="{{ $f['id'] }}">{{ $f['name'] }}:</label>
                                 
+                                <label {{ $hidden }} class="form-label" for="{{ $f['id'] }}">{{ $f['name'] }}:</label>
+
                                 @if ($f['type_field_id'] == 1)
-                                    <input type="text" class="form-control" id="{{ $f['id'] }}"
+                                    <input type="text" class="form-control" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 2)
-                                    <input type="text" class="form-control" id="{{ $f['id'] }}"
+                                    <input type="text" class="form-control" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 3)
-                                    <select class="form-select" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
+                                    <select class="form-select"
+                                        id="{{ $f['id'] }}"
+                                        name="{{ $block->id }}[{{ $f['id'] }}]"
+                                        data-placeholder="Selecciona"
+                                        @if($f['can_edit'] == 0) data-readonly="1" @endif
+                                        {{ $hidden }}>
                                         @if (!empty($f['options']))
                                             @foreach (explode("\r\n", $f['options']) as $opt)
                                                 <option value="{{ $opt }}">{{ $opt }}</option>
@@ -104,9 +110,13 @@
                                         @endif
                                     </select>
                                 @elseif($f['type_field_id'] == 4)
-                                    <select class="select2 form-control select2-multiple" id="{{ $f['id'] }}"
-                                        name="{{ $block->id }}[{{ $f['id'] }}][]" multiple="multiple"
-                                        data-placeholder="Selecciona" {{ $readonly }} {{ $hidden }}>
+                                    <select class="select2 form-control select2-multiple"
+                                        id="{{ $f['id'] }}"
+                                        name="{{ $block->id }}[{{ $f['id'] }}][]"
+                                        multiple="multiple"
+                                        data-placeholder="Selecciona"
+                                        @if($f['can_edit'] == 0) data-readonly="1" @endif
+                                        {{ $hidden }}>
                                         @if (!empty($f['options']))
                                             @foreach (explode("\r\n", $f['options']) as $opt)
                                                 <option value="{{ $opt }}">{{ $opt }}</option>
@@ -114,17 +124,17 @@
                                         @endif
                                     </select>
                                 @elseif($f['type_field_id'] == 5)
-                                    <input class="form-control" type="date" id="{{ $f['id'] }}"
+                                    <input class="form-control" type="date" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 6)
-                                    <input class="form-control" type="datetime-local" id="{{ $f['id'] }}"
+                                    <input class="form-control" type="datetime-local" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 7)
 
                                     @php
                                     $range = $f['range']?? 8;
                                     @endphp
-                                    <input 
+                                    <input style="background-color: {{ $color_readonly }}"
                                         class="form-control" 
                                         type="number" 
                                         id="{{ $f['id'] }}" 
@@ -134,7 +144,7 @@
                                         oninput="if(this.value.length > {{ $range }}) this.value = this.value.slice(0, {{ $range }});">
                                         
                                 @elseif($f['type_field_id'] == 8)
-                                    <input type="checkbox" switch="bool" id="{{ $f['id'] }}"
+                                    <input type="checkbox" switch="bool" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }} />
                                     <label for="{{ $f['id'] }}" class="mb-0" data-on-label="On"
                                         data-off-label="Off"></label>
@@ -142,10 +152,10 @@
                                     <input class="form-check-input" type="checkbox" id="{{ $f['id'] }}" name="{{ $block->id }}[{{ $f['id'] }}]">
                                 </div> --}}
                                 @elseif($f['type_field_id'] == 9)
-                                    <input class="form-control" type="file" id="{{ $f['id'] }}"
+                                    <input class="form-control" type="file" id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @elseif($f['type_field_id'] == 10)
-                                    <input class="form-control" type="file" multiple id="{{ $f['id'] }}"
+                                    <input class="form-control" type="file" multiple id="{{ $f['id'] }}" style="background-color: {{ $color_readonly }}"
                                         name="{{ $block->id }}[{{ $f['id'] }}]" {{ $readonly }} {{ $hidden }}>
                                 @endif
                             </div>
@@ -181,6 +191,31 @@
 
 
             $('.select2').select2();
+
+            $('[data-readonly="1"]').each(function() {
+                const $el = $(this);
+
+                if ($el.hasClass('select2')) {
+                    $el.on('select2:opening select2:unselecting select2:selecting', function(e) {
+                        e.preventDefault();
+                    });
+                } else {
+                    $el.on('mousedown focus', function(e) {
+                        e.preventDefault();
+                        $(this).blur();
+                    });
+                    $el.on('keydown', function(e) {
+                        const blocked = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+                        if (blocked.includes(e.which)) e.preventDefault();
+                    });
+                }
+
+                $el.css({
+                    'background-color': '#e9ecef',
+                    'pointer-events': 'auto',
+                    'cursor': 'not-allowed'
+                });
+            });
 
             if (form) {
 

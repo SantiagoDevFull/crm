@@ -104,17 +104,26 @@ class SoldsController extends Controller
         $isSup = Sup::where('user_id', $userId)->where('camp_id', $id)->first();
 
         if ($isSup) {
-
+            
             $agents = AgentInSup::leftjoin('agents', 'agents.id', '=', 'agents_in_sups.agent_id')
                 ->leftjoin('users', 'users.id', '=', 'agents.user_id')
                 ->select(
+                    'agents_in_sups.id as id',
                     'users.name as user_name',
                 )
                 ->where('agents_in_sups.sup_id', $isSup->id)
                 ->where('agents.camp_id', $id)
                 ->get();
+
+                foreach($agents as $agent){
+                    echo $agent."<br>";
+                }
+
             $userNames = $agents->pluck('user_name')->toArray();
             array_push($userNames,  Auth::user()->name);
+
+         
+
 
             $forms = Form::where('forms.campain_id', $id)
                 ->leftjoin('campains', 'campains.id', '=', 'forms.campain_id')
@@ -216,6 +225,7 @@ class SoldsController extends Controller
 
         $cont = $groups->count();
 
+        
         return view('solds', compact(
             'id',
             'tab_state_id',
@@ -232,6 +242,7 @@ class SoldsController extends Controller
             'user_groups',
             'cont'
         ));
+        
     }
 
     public function export($id, $tab_state_id)
@@ -297,9 +308,11 @@ class SoldsController extends Controller
 
         $isAdmin = UserGroup::where('user_id', $userId)->where('group_id', 14)->first();
 
+        
+      /*
         if ($isAdmin) {
 
-            /*
+            Antiguo
             $states = StateState::leftJoin('states', 'states.id', '=', 'states_states.to_state_id')
             ->leftJoin('tab_states', 'tab_states.id', '=', 'states.tab_state_id')
             ->leftJoin('campains', 'campains.id', '=', 'tab_states.campain_id')
@@ -310,7 +323,8 @@ class SoldsController extends Controller
             ->where('tab_states.campain_id', $id)
             ->orderBy('states.order', 'asc')
             ->get();
-            */
+            
+            Nuevo
             $states = State::leftjoin('tab_states', 'tab_states.id', '=', 'states.tab_state_id')
             ->leftjoin('campains', 'campains.id', '=', 'tab_states.campain_id')
             ->leftjoin('states_states', 'states_states.from_state_id', '=', 'states.id')
@@ -332,8 +346,20 @@ class SoldsController extends Controller
                 ->whereIn('from_state_id', $newStatesIds)
                 //->whereIn('states_states.from_state_id', $newStatesIds)
                 ->get();
-                echo "sdfd";
         }
+      */
+        
+        $states = State::leftjoin('tab_states', 'tab_states.id', '=', 'states.tab_state_id')
+        ->leftjoin('campains', 'campains.id', '=', 'tab_states.campain_id')
+        ->leftjoin('states_states', 'states_states.from_state_id', '=', 'states.id')
+        ->select(
+            'states_states.from_state_id as id',
+            'states.name as name',
+        )
+        ->where('tab_states.campain_id', $id)
+        ->groupBy('states_states.from_state_id', 'states.name')
+        ->orderBy('states.order', 'asc')
+        ->get();
 
 
         $grupos = UserGroup::where('user_id', $userId)->pluck('group_id');
@@ -488,6 +514,7 @@ class SoldsController extends Controller
         $user = User::findOrFail($userId);
         $company = Company::findOrFail(1);
 
+    
         return view('forms', compact('id', 'form_id', 'campaigns', 'tab_state_id', 'campaign', 'fields', 'blocks', 'states', 'form', 'modules', 'user', 'company'));
     }
 

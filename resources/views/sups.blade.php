@@ -17,14 +17,10 @@
     <x-select-section :idForm="'form_campaign'" :idSelect="'id_campaign'" :nameLabel="'Seleccionar Campaña'" :options="$campaigns"></x-select-section>
 
     @if ($id)
-        <x-table :idCreateButton="'newEditSup'" :idModal="'editSup'" :textButton="'Crear Supervisor'" :headers="['ID','NOMBRE','CAMPAÑA','ESTADO','OPCIONES']">
+        <x-table :idCreateButton="'newEditSup'" :idModal="'editSup'" :textButton="'Crear Supervisor'" :headers="['SUPERVISOR','CAMPAÑA','ESTADO','OPCIONES']">
             @foreach ($sups as $sup)
                 <tr data-id="{{ $sup->id }}">
-                    <td data-field="id">
-                        <div data-sup-id="{{ $sup->id }}">
-                            {{ $sup->user_id }}
-                        </div>
-                    </td>
+                   
                     <td data-field="nombre">
                         <div data-sup-id="{{ $sup->id }}">
                             {{ $sup->user_name }}
@@ -67,16 +63,6 @@
                     </select>
                     <div class="valid-feedback">Valido!</div>
                     <div class="invalid-feedback">El supervisor es requerido.</div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label" for="agents">Agentes:</label>
-                    <select class="select2 form-control select2-multiple" id="agents" name="agents[]" style="width: 100%;" multiple="multiple" data-placeholder="Selecciona">
-                        @foreach ($agents as $agent)
-                            <option value="{{ $agent->id }}">{{ $agent->user_name }}</option>
-                        @endforeach
-                    </select>
                 </div>
             </div>
         </div>

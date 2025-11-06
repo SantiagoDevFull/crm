@@ -330,8 +330,6 @@ class GroupUsersController extends Controller
         $subSections = SubSection::whereIn('id', $subSectionIds)
             ->get();
 
-        echo Log::info("secciones primero : " . implode(',', $sectionIds));
-
         foreach ($sections as $section) {
             $moduleIds[] = $section->module_id;
         };

@@ -312,14 +312,24 @@
                 tree.check_node(`section_${item.section_id}`)
             });
             */
+
+            sections.forEach(section => {
+                const sectionNode = tree.get_node(`section_${section.section_id}`);
+
+                if (!sectionNode.children || sectionNode.children.length === 0) {
+                    tree.check_node(sectionNode);
+                }
+            });
+            
             subSections.forEach(item => {
                 tree.check_node(`subSection_${item.sub_section_id}`)
             });
+            
         };
 
         $(document).ready(function() {
             const table = $('#datatable').DataTable();
-
+            
             $('#tree-container').jstree({
                 core: {
                     data: treePermissions(allModules)
@@ -342,6 +352,7 @@
                 });
 
                 const finalSelected = Array.from(selectedIds);
+                
                 $('#selected-nodes').val(JSON.stringify(finalSelected));
             });
 
